@@ -1,0 +1,13 @@
+// tsconfig.spec.json
+
+{
+  "extends": "./tsconfig.json",
+
+  "compilerOptions": {
+    "types": ["node", "vitest/globals"],
+
+    "isolatedModules": true
+  },
+
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+}
