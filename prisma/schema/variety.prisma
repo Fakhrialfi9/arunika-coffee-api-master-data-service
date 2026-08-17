@@ -1,0 +1,65 @@
+model Variety {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Species Relationship
+   */
+  speciesId String
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  /**
+   * Botanical Information
+   */
+  geneticBackground String?
+
+  originCountry String?
+
+  /**
+   * Agricultural Information
+   */
+  plantCharacteristics Json?
+
+  /**
+   * Flavor Information
+   */
+  flavorCharacteristics Json?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Relations
+   */
+  species Species @relation(fields: [speciesId], references: [id])
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt   DateTime     @updatedAt
+  coffeeBeans CoffeeBean[]
+
+  @@index([speciesId])
+  @@map("varieties")
+}

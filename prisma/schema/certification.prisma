@@ -1,0 +1,52 @@
+model Certifications {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  type String?
+
+  /**
+   * Certification Authority
+   */
+  issuer String?
+
+  website String?
+
+  /**
+   * Certification Scope
+   */
+  countryScope String?
+
+  requiresExpiration Boolean @default(false)
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("certifications")
+}

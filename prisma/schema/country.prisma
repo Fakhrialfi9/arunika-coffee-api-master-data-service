@@ -1,0 +1,73 @@
+model Country {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  officialName String?
+
+  shortName String?
+
+  iso2 String @unique
+
+  iso3 String @unique
+
+  /**
+   * Geographic Information
+   */
+  continent String?
+
+  timezone String?
+
+  /**
+   * Communication Information
+   */
+  phoneCode String?
+
+  /**
+   * Economic Information
+   */
+  currency String?
+
+  currencyCode String?
+
+  /**
+   * Coffee Origin Information
+   */
+  isCoffeeOrigin Boolean @default(false)
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Relations
+   */
+  regions Region[]
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("countries")
+}

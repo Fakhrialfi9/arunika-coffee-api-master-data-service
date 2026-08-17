@@ -1,0 +1,116 @@
+model CoffeeBean {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Lot Information
+   */
+  code String @unique
+
+  lotNumber String?
+
+  name String
+
+  description String?
+
+  /**
+   * Origin Relationship
+   */
+  regionId String
+
+  farmerId String?
+
+  farmId String?
+
+  /**
+   * Coffee Identity
+   */
+  speciesId String
+
+  varietyId String?
+
+  /**
+   * Processing Relationship
+   */
+  processingMethodId String
+
+  /**
+   * Quality Classification
+   */
+  gradeId String?
+
+  harvestSeasonId String?
+
+  /**
+   * Quality Profile
+   */
+  cuppingScore Float?
+
+  moisture Float?
+
+  density Float?
+
+  beanSize String?
+
+  qualityStatus String?
+
+  flavorProfiles Json?
+
+  aromaNotes Json?
+
+  /**
+   * Inventory Information
+   */
+  availableWeight Float?
+
+  reservedWeight Float?
+
+  weightUnit String @default("kg")
+
+  /**
+   * Relations
+   */
+  region Region @relation(fields: [regionId], references: [id])
+
+  farmer Farmer? @relation(fields: [farmerId], references: [id])
+
+  farm Farm? @relation(fields: [farmId], references: [id])
+
+  species Species @relation(fields: [speciesId], references: [id])
+
+  variety Variety? @relation(fields: [varietyId], references: [id])
+
+  processingMethod ProcessingMethod @relation(fields: [processingMethodId], references: [id])
+
+  grade CoffeeGrade? @relation(fields: [gradeId], references: [id])
+
+  harvestSeason HarvestSeason? @relation(fields: [harvestSeasonId], references: [id])
+
+  /**
+   * Status
+   */
+  isFeatured Boolean @default(false)
+
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt      DateTime        @updatedAt
+  sensoryProfile SensoryProfile?
+
+  @@index([regionId])
+  @@index([farmerId])
+  @@index([farmId])
+  @@index([speciesId])
+  @@index([harvestSeasonId])
+  @@map("coffee_beans")
+}

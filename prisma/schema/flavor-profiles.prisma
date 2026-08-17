@@ -1,0 +1,43 @@
+model FlavorProfiles {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  category String?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Relations
+   */
+  sensoryProfileFlavors SensoryProfileFlavor[]
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("flavor_profiles")
+}

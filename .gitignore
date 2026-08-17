@@ -168,3 +168,5 @@ Thumbs.db
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 /src/generated/prisma
+
+/src/generated/prisma

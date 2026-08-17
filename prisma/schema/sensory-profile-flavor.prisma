@@ -1,0 +1,39 @@
+model SensoryProfileFlavor {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Relations
+   */
+  sensoryProfileId String
+
+  flavorProfileId String
+
+  sensoryProfile SensoryProfile @relation(fields: [sensoryProfileId], references: [id], onDelete: Cascade)
+
+  flavorProfile FlavorProfiles @relation(fields: [flavorProfileId], references: [id], onDelete: Restrict)
+
+  /**
+   * Metadata
+   */
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  /**
+   * Constraints
+   */
+  @@unique([sensoryProfileId, flavorProfileId])
+  @@index([sensoryProfileId])
+  @@index([flavorProfileId])
+  @@map("sensory_profile_flavors")
+}

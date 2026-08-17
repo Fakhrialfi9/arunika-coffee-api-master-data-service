@@ -1,0 +1,85 @@
+model Region {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Geographic Relationship
+   */
+  countryId String
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  type String?
+
+  /**
+   * Administrative Information
+   */
+  province String?
+
+  district String?
+
+  city String?
+
+  village String?
+
+  /**
+   * Geographic Coordinate
+   */
+  latitude Float?
+
+  longitude Float?
+
+  /**
+   * Terroir Information
+   */
+  altitudeMin Int?
+
+  altitudeMax Int?
+
+  altitudeUnit String? @default("MASL")
+
+  climate String?
+
+  soilType String?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Relations
+   */
+  country Country @relation(fields: [countryId], references: [id])
+
+  organizations Organization[]
+
+  farmers Farmer[]
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt   DateTime     @updatedAt
+  coffeeBeans CoffeeBean[]
+
+  @@index([countryId])
+  @@map("regions")
+}

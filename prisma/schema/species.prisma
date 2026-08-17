@@ -1,0 +1,51 @@
+model Species {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  commonName String?
+
+  /**
+   * Botanical Information
+   */
+  scientificName String?
+
+  originRegion String?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Relations
+   */
+  varieties Variety[]
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt   DateTime     @updatedAt
+  coffeeBeans CoffeeBean[]
+
+  @@map("species")
+}

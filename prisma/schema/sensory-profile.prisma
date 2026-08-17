@@ -1,0 +1,60 @@
+model SensoryProfile {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Coffee Relationship
+   */
+  coffeeBeanId String @unique
+
+  /**
+   * Quality Evaluation
+   */
+  cuppingScore Float?
+
+  /**
+   * Sensory Attributes
+   */
+  aroma String?
+
+  body String?
+
+  acidity String?
+
+  sweetness String?
+
+  aftertaste String?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Relations
+   */
+
+  coffeeBean CoffeeBean @relation(fields: [coffeeBeanId], references: [id])
+
+  sensoryProfileFlavors SensoryProfileFlavor[]
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@map("sensory_profiles")
+}

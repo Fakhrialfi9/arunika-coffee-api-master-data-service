@@ -1,0 +1,62 @@
+model ProcessingMethod {
+  /**
+   * Identity
+   */
+  id String @id @default(cuid())
+
+  uuid String @unique @default(uuid())
+
+  /**
+   * Basic Information
+   */
+  code String @unique
+
+  name String
+
+  category String?
+
+  /**
+   * Fermentation Information
+   */
+  fermentation Boolean @default(false)
+
+  fermentationType String?
+
+  fermentationDuration String?
+
+  /**
+   * Drying Information
+   */
+  dryingMethod String?
+
+  dryingDuration String?
+
+  /**
+   * Processing Information
+   */
+  processingSteps Json?
+
+  parameters Json?
+
+  /**
+   * Content Information
+   */
+  description String?
+
+  /**
+   * Status
+   */
+  isActive Boolean @default(true)
+
+  sortOrder Int @default(0)
+
+  /**
+   * Timestamps
+   */
+  createdAt DateTime @default(now())
+
+  updatedAt   DateTime     @updatedAt
+  coffeeBeans CoffeeBean[]
+
+  @@map("processing_methods")
+}
