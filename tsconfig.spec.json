@@ -2,12 +2,9 @@
 
 {
   "extends": "./tsconfig.json",
-
   "compilerOptions": {
-    "types": ["node", "vitest/globals"],
-
-    "isolatedModules": true
+    "noEmit": true,
+    "types": ["node", "vitest/globals"]
   },
-
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+  "include": ["src/**/*.spec.ts", "src/**/*.test.ts", "test/**/*.ts"]
 }

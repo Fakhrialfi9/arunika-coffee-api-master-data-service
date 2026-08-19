@@ -5,6 +5,11 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "target": "ES2023",
+
+    "declaration": true,
+    "removeComments": true,
+    "sourceMap": true,
+
     "strict": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
@@ -12,20 +17,36 @@
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
     "noImplicitThis": true,
+    "useUnknownInCatchVariables": true,
+
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
+
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "declaration": true,
-    "removeComments": true,
-    "sourceMap": true,
+
+    "verbatimModuleSyntax": true,
+
     "incremental": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
+
     "noFallthroughCasesInSwitch": true,
+
     "moduleDetection": "force",
+
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,
-    "useDefineForClassFields": true
-  }
+
+    "useDefineForClassFields": true,
+
+    "types": ["node", "vitest/globals"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "test", "coverage"]
 }
