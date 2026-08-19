@@ -11,7 +11,7 @@ COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
 COPY tsconfig.json tsconfig.build.json nest-cli.json ./
-COPY prisma.config.js ./
+COPY prisma.config.ts ./
 COPY prisma ./prisma
 COPY proto ./proto
 COPY src ./src
