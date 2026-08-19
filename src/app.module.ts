@@ -1,8 +1,12 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { appConfig } from './config/app.config.js';
+import { DatabaseModule } from './infrastructure/database/database.module.js';
+import { GrpcHealthService } from './infrastructure/health/grpc-health.service.js';
+import { MasterDataGrpcController } from './infrastructure/grpc/master-data.grpc.controller.js';
 
 @Module({
   imports: [
@@ -12,8 +16,10 @@ import { appConfig } from './config/app.config.js';
       load: [appConfig],
       envFilePath: ['.env'],
     }),
+    DatabaseModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, MasterDataGrpcController],
+  providers: [AppService, GrpcHealthService],
+  exports: [GrpcHealthService],
 })
 export class AppModule {}
