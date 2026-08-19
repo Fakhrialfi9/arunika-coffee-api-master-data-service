@@ -1,10 +1,12 @@
-import 'dotenv/config';
+import { loadEnvFile } from 'node:process';
 
-import { defineConfig } from 'prisma/config';
+import { defineConfig, env } from 'prisma/config';
 
-const databaseUrl =
-  process.env.DATABASE_URL ??
-  'mysql://dev:dev123@127.0.0.1:3306/arunika_coffee_master_data';
+try {
+  loadEnvFile('.env');
+} catch {
+  // Environment variables may be provided by the runtime in CI/production.
+}
 
 export default defineConfig({
   schema: 'prisma/schema',
@@ -15,6 +17,6 @@ export default defineConfig({
   },
 
   datasource: {
-    url: databaseUrl,
+    url: env('DATABASE_URL'),
   },
 });
