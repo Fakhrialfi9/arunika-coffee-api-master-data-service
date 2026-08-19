@@ -15,7 +15,6 @@ import { GrpcHealthService } from './infrastructure/health/grpc-health.service.j
 async function bootstrap(): Promise<void> {
   const config = appConfig();
   const logger = new Logger('Bootstrap');
-  let healthService: GrpcHealthService;
 
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.GRPC,
@@ -44,7 +43,7 @@ async function bootstrap(): Promise<void> {
     },
   });
 
-  healthService = app.get(GrpcHealthService);
+  const healthService = app.get(GrpcHealthService);
 
   app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
   await app.listen();
