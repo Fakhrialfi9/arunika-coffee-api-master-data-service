@@ -1,12 +1,6 @@
-import { loadEnvFile } from 'node:process';
+import 'dotenv/config';
 
 import { defineConfig, env } from 'prisma/config';
-
-try {
-  loadEnvFile('.env');
-} catch {
-  // Environment variables may be provided by the runtime in CI/production.
-}
 
 export default defineConfig({
   schema: 'prisma/schema',
