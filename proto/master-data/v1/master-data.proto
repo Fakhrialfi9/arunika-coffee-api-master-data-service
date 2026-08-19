@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package arunika.coffee.master_data.v1;
+
+service MasterDataService {
+  rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
+}
+
+message GetHealthRequest {}
+
+message GetHealthResponse {
+  string service = 1;
+  string status = 2;
+}
