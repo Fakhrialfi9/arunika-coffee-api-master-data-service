@@ -1,15 +1,64 @@
-import { ConfigService } from '@nestjs/config';
+import 'reflect-metadata';
+
+import { join } from 'node:path';
+
+import type { Server } from '@grpc/grpc-js';
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppConfig } from './config/app.config.js';
+import { Transport } from '@nestjs/microservices';
+import { protoPath as healthCheckProtoPath } from 'grpc-health-check';
+
 import { AppModule } from './app.module.js';
+import { appConfig } from './config/app.config.js';
+import { GrpcHealthService } from './infrastructure/health/grpc-health.service.js';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
-  const config = app.get(ConfigService);
-  const port = config.getOrThrow<AppConfig['port']>('app.port');
-  const host = config.getOrThrow<AppConfig['host']>('app.host');
+  const config = appConfig();
+  const logger = new Logger('Bootstrap');
+  let healthService: GrpcHealthService;
 
-  await app.listen(port, host);
+  const app = await NestFactory.createMicroservice(AppModule, {
+    transport: Transport.GRPC,
+    options: {
+      package: 'arunika.coffee.master_data.v1',
+      protoPath: [
+        healthCheckProtoPath,
+        join(process.cwd(), 'proto/master-data/v1/master-data.proto'),
+      ],
+      url: `${config.grpcMasterHost}:${config.grpcMasterPort}`,
+      maxReceiveMessageLength: config.securityGrpcMaxMessageBytes,
+      maxSendMessageLength: config.securityGrpcMaxMessageBytes,
+      onLoadPackageDefinition: (
+        _packageDefinition: unknown,
+        server: unknown,
+      ): void => {
+        healthService.attach(server as Server);
+      },
+      loader: {
+        keepCase: true,
+        longs: String,
+        enums: String,
+        defaults: true,
+        oneofs: true,
+      },
+    },
+  });
+
+  healthService = app.get(GrpcHealthService);
+
+  app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
+  await app.listen();
+  await healthService.startMonitoring();
+
+  logger.log(
+    JSON.stringify({
+      event: 'service.started',
+      service: config.name,
+      environment: config.environment,
+      transport: 'grpc',
+      address: `${config.grpcMasterHost}:${config.grpcMasterPort}`,
+    }),
+  );
 }
 
 void bootstrap();
