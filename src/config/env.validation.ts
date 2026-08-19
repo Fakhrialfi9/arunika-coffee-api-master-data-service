@@ -195,7 +195,9 @@ function validateProductionEnvironment(config: EnvironmentVariables): void {
   }
 
   if (LOCAL_HOSTS.has(config.GRPC_MASTER_HOST.toLowerCase())) {
-    throw new Error('GRPC_MASTER_HOST must not bind to localhost in production');
+    throw new Error(
+      'GRPC_MASTER_HOST must not bind to localhost in production',
+    );
   }
 
   if (config.LOG_LEVEL === 'debug' || config.LOG_LEVEL === 'verbose') {
