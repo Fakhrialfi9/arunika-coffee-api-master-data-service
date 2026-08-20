@@ -1,17 +1,17 @@
 Arunika Coffee Master Data Service — Step 26-45 Verification
 Repository: master-data-service
 Branch: main
-Commit: 7b92941
+Commit: 859e56b
+Database: arunika_coffee_master_data@localhost:3306
 Report: tmp/steps-26-45-report.txt
 
 ============================================================
 STEP PRE — Verification Preconditions
 ============================================================
 PASS  Git branch is main
-FAIL  Working tree is not clean; review user changes before trusting the report
+FAIL  Working tree is not clean
 PASS  Node.js major version is 22
 PASS  npm is available (11.19.0)
-PASS  git is available
 PASS  mysql CLI is available
 
 ============================================================
@@ -19,457 +19,329 @@ STEP 26 — Master Data Foundation Audit
 ============================================================
 PASS  package.json exists
 PASS  package-lock.json exists
-PASS  NestJS core dependency exists
-FAIL  Prisma 7 dependency exists
-PASS  Prisma Client 7 dependency exists
+PASS  NestJS core 11 dependency exists
+PASS  Prisma CLI 7.9.1 dependency exists
+PASS  Prisma Client 7.9.1 dependency exists
 PASS  TypeScript dependency exists
 PASS  Vitest dependency exists
-bash: -c: line 0: syntax error near unexpected token `('
-bash: -c: line 0: `node - <<\"NODE\"\nconst s=require("./package.json").scripts||{}; const x=["test","test:unit","test:e2e","test:grpc","test:security","test:all","typecheck","lint","format:check","build","prisma:generate","prisma:status"]; process.exit(x.every(k=>typeof s[k]==="string")?0:1)\nNODE'
-FAIL  Required package scripts exist
-PASS  No obvious branch other than main is checked out
+PASS  Required package scripts exist
 
 ============================================================
 STEP 27 — Master Data Architecture
 ============================================================
-PASS  src directory exists
-PASS  test directory exists
-PASS  Domain/application/infrastructure/presentation concepts are represented in source tree
-PASS  No direct Prisma import from controller/presentation files
-PASS  No direct database URL usage in controller/presentation files
+PASS  src and test directories exist
+PASS  Layered architecture concepts are represented
+PASS  Presentation layer has no direct Prisma import
+PASS  Presentation layer has no direct DB access
 PASS  DATABASE_URL is configured
 
 ============================================================
 STEP 28 — Database Foundation
 ============================================================
-Failed to load config file "/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts" as a TypeScript/JavaScript module. Error: Error: Cannot find module 'prisma/config'
-Require stack:
-- /Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts
-FAIL  Prisma schema validates
-Failed to load config file "/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts" as a TypeScript/JavaScript module. Error: Error: Cannot find module 'prisma/config'
-Require stack:
-- /Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts
-FAIL  Prisma Client generates
-Failed to load config file "/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts" as a TypeScript/JavaScript module. Error: Error: Cannot find module 'prisma/config'
-Require stack:
-- /Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service/prisma.config.ts
-FAIL  Prisma migration status is synchronized
-bash: mysql_exec: command not found
-FAIL  Database connection succeeds
-bash: mysql_exec: command not found
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+The schemas at prisma/schema are valid 🚀
+PASS  Prisma schema validates
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 224ms
+
+PASS  Prisma Client generates
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+Datasource "db": MySQL database "arunika_coffee_master_data" at "127.0.0.1:3306"
+
+1 migration found in prisma/migrations
+
+Database schema is up to date!
+PASS  Prisma migration status is synchronized
+PASS  Database connection succeeds
 PASS  Database arunika_coffee_master_data exists
-bash: mysql_exec: command not found
-FAIL  Migration table exists
+PASS  Migration table exists
 
 ============================================================
 STEP 29 — Database Schema Inventory
 ============================================================
-bash: mysql_exec: command not found
-FAIL  Table exists: _prisma_migrations
-bash: mysql_exec: command not found
-FAIL  Table exists: certifications
-bash: mysql_exec: command not found
-FAIL  Table exists: coffee_beans
-bash: mysql_exec: command not found
-FAIL  Table exists: coffee_grades
-bash: mysql_exec: command not found
-FAIL  Table exists: countries
-bash: mysql_exec: command not found
-FAIL  Table exists: farmers
-bash: mysql_exec: command not found
-FAIL  Table exists: farms
-bash: mysql_exec: command not found
-FAIL  Table exists: flavor_profiles
-bash: mysql_exec: command not found
-FAIL  Table exists: harvest_seasons
-bash: mysql_exec: command not found
-FAIL  Table exists: organizations
-bash: mysql_exec: command not found
-FAIL  Table exists: processing_methods
-bash: mysql_exec: command not found
-FAIL  Table exists: regions
-bash: mysql_exec: command not found
-FAIL  Table exists: sensory_profile_flavors
-bash: mysql_exec: command not found
-FAIL  Table exists: sensory_profiles
-bash: mysql_exec: command not found
-FAIL  Table exists: species
-bash: mysql_exec: command not found
-FAIL  Table exists: varieties
+PASS  Table exists: _prisma_migrations
+PASS  Table exists: certifications
+PASS  Table exists: coffee_beans
+PASS  Table exists: coffee_grades
+PASS  Table exists: countries
+PASS  Table exists: farmers
+PASS  Table exists: farms
+PASS  Table exists: flavor_profiles
+PASS  Table exists: harvest_seasons
+PASS  Table exists: organizations
+PASS  Table exists: processing_methods
+PASS  Table exists: regions
+PASS  Table exists: sensory_profile_flavors
+PASS  Table exists: sensory_profiles
+PASS  Table exists: species
+PASS  Table exists: varieties
+PASS  Column contract: countries.id
+PASS  Column contract: countries.uuid
+PASS  Column contract: countries.code
+PASS  Column contract: countries.createdAt
+PASS  Column contract: regions.id
+PASS  Column contract: regions.countryId
+PASS  Column contract: regions.code
+PASS  Column contract: organizations.regionId
+PASS  Column contract: organizations.code
+PASS  Column contract: farmers.regionId
+PASS  Column contract: farmers.organizationId
+PASS  Column contract: farmers.code
+PASS  Column contract: farms.farmerId
+PASS  Column contract: farms.uuid
+PASS  Column contract: species.code
+PASS  Column contract: species.uuid
+PASS  Column contract: varieties.speciesId
+PASS  Column contract: varieties.code
+PASS  Column contract: processing_methods.processingSteps
+PASS  Column contract: processing_methods.parameters
+PASS  Column contract: coffee_grades.exportEligible
+PASS  Column contract: coffee_grades.minimumCuppingScore
+PASS  Column contract: coffee_grades.maxDefectCount
+PASS  Column contract: harvest_seasons.year
+PASS  Column contract: harvest_seasons.startMonth
+PASS  Column contract: harvest_seasons.endMonth
+PASS  Column contract: harvest_seasons.isCurrent
+PASS  Column contract: certifications.requiresExpiration
+PASS  Column contract: certifications.isActive
+PASS  Unique key: countries.uuid
+PASS  Unique key: countries.code
+PASS  Unique key: regions.uuid
+PASS  Unique key: regions.code
+PASS  Unique key: organizations.uuid
+PASS  Unique key: organizations.code
+PASS  Unique key: farmers.uuid
+PASS  Unique key: farmers.code
+PASS  Unique key: farms.uuid
+PASS  Unique key: species.uuid
+PASS  Unique key: species.code
+PASS  Unique key: varieties.uuid
+PASS  Unique key: varieties.code
+PASS  Unique key: processing_methods.uuid
+PASS  Unique key: processing_methods.code
+PASS  Unique key: coffee_grades.uuid
+PASS  Unique key: coffee_grades.code
+PASS  Unique key: harvest_seasons.uuid
+PASS  Unique key: certifications.uuid
+PASS  Unique key: certifications.code
 
 ============================================================
 STEP 30 — Referential Integrity
 ============================================================
-bash: mysql_exec: command not found
-FAIL  All expected FK constraints have no orphan rows
-PASS  FK orphan check: coffee_beans.farmerId -> farmers.id
-PASS  FK orphan check: coffee_beans.farmId -> farms.id
-PASS  FK orphan check: coffee_beans.gradeId -> coffee_grades.id
-PASS  FK orphan check: coffee_beans.harvestSeasonId -> harvest_seasons.id
-PASS  FK orphan check: coffee_beans.processingMethodId -> processing_methods.id
-PASS  FK orphan check: coffee_beans.regionId -> regions.id
-PASS  FK orphan check: coffee_beans.speciesId -> species.id
-PASS  FK orphan check: coffee_beans.varietyId -> varieties.id
-PASS  FK orphan check: farmers.organizationId -> organizations.id
-PASS  FK orphan check: farmers.regionId -> regions.id
-PASS  FK orphan check: farms.farmerId -> farmers.id
-PASS  FK orphan check: organizations.regionId -> regions.id
-PASS  FK orphan check: regions.countryId -> countries.id
-PASS  FK orphan check: sensory_profile_flavors.flavorProfileId -> flavor_profiles.id
-PASS  FK orphan check: sensory_profile_flavors.sensoryProfileId -> sensory_profiles.id
-PASS  FK orphan check: sensory_profiles.coffeeBeanId -> coffee_beans.id
-PASS  FK orphan check: varieties.speciesId -> species.id
-PASS  Database exposes 17 foreign-key column(s)
+PASS  FK exists: regions.countryId -> countries.id
+PASS  No orphan rows: regions.countryId
+PASS  FK exists: organizations.regionId -> regions.id
+PASS  No orphan rows: organizations.regionId
+PASS  FK exists: farmers.regionId -> regions.id
+PASS  No orphan rows: farmers.regionId
+PASS  FK exists: farmers.organizationId -> organizations.id
+PASS  No orphan rows: farmers.organizationId
+PASS  FK exists: farms.farmerId -> farmers.id
+PASS  No orphan rows: farms.farmerId
+PASS  FK exists: varieties.speciesId -> species.id
+PASS  No orphan rows: varieties.speciesId
+PASS  FK exists: coffee_beans.regionId -> regions.id
+PASS  No orphan rows: coffee_beans.regionId
+PASS  FK exists: coffee_beans.farmerId -> farmers.id
+PASS  No orphan rows: coffee_beans.farmerId
+PASS  FK exists: coffee_beans.farmId -> farms.id
+PASS  No orphan rows: coffee_beans.farmId
+PASS  FK exists: coffee_beans.speciesId -> species.id
+PASS  No orphan rows: coffee_beans.speciesId
+PASS  FK exists: coffee_beans.varietyId -> varieties.id
+PASS  No orphan rows: coffee_beans.varietyId
+PASS  FK exists: coffee_beans.processingMethodId -> processing_methods.id
+PASS  No orphan rows: coffee_beans.processingMethodId
+PASS  FK exists: coffee_beans.gradeId -> coffee_grades.id
+PASS  No orphan rows: coffee_beans.gradeId
+PASS  FK exists: coffee_beans.harvestSeasonId -> harvest_seasons.id
+PASS  No orphan rows: coffee_beans.harvestSeasonId
+PASS  FK exists: sensory_profiles.coffeeBeanId -> coffee_beans.id
+PASS  No orphan rows: sensory_profiles.coffeeBeanId
+PASS  FK exists: sensory_profile_flavors.sensoryProfileId -> sensory_profiles.id
+PASS  No orphan rows: sensory_profile_flavors.sensoryProfileId
+PASS  FK exists: sensory_profile_flavors.flavorProfileId -> flavor_profiles.id
+PASS  No orphan rows: sensory_profile_flavors.flavorProfileId
 
 ============================================================
 STEP 31 — Geography Master Data
 ============================================================
-bash: mysql_exec: command not found
-FAIL  countries has PK
-bash: mysql_exec: command not found
-FAIL  regions has countryId FK
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  countries.uuid is unique
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  regions.code is unique
+PASS  Country -> Region FK exists
+PASS  countries.uuid unique
+PASS  countries.code unique
+PASS  countries.iso2 unique
+PASS  countries.iso3 unique
+PASS  regions.code unique
 
 ============================================================
 STEP 32 — Organization Master Data
 ============================================================
-bash: mysql_exec: command not found
-FAIL  organizations.regionId FK exists
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  organizations.code is unique
+PASS  Organization -> Region FK exists
+PASS  organizations.code unique
+PASS  organizations.type exists
+PASS  organizations.memberCount exists
+PASS  organizations.isActive exists
 
 ============================================================
 STEP 33 — Farmer Master Data
 ============================================================
-bash: mysql_exec: command not found
-FAIL  farmers.regionId FK exists
-bash: check_column: command not found
-FAIL  farmers.organizationId nullable
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  farmers.code is unique
+PASS  Farmer -> Region FK exists
+PASS  Farmer -> Organization FK exists
+PASS  farmers.organizationId nullable
+PASS  farmers.code unique
+PASS  farmers.contactName exists
+PASS  farmers.farmingSinceYear exists
 
 ============================================================
 STEP 34 — Farm Master Data
 ============================================================
-bash: check_column: command not found
-FAIL  farms.farmerId is required
-bash: mysql_exec: command not found
-FAIL  farms.farmerId FK exists
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  farms.uuid is unique
+PASS  Farm -> Farmer FK exists
+PASS  farms.farmerId required
+PASS  farms.uuid unique
+PASS  farms.area exists
+PASS  farms.altitudeMin exists
+PASS  farms.altitudeMax exists
+PASS  farms.latitude exists
+PASS  farms.longitude exists
+PASS  farms.soilType exists
+PASS  farms.climate exists
+PASS  farms.farmingPractice exists
 
 ============================================================
 STEP 35 — Farmer-Farm Supply Chain Graph
 ============================================================
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  Country -> Region -> Farmer graph exists
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  Farmer -> Farm graph exists
+PASS  Country -> Region -> Farmer graph valid
+PASS  Region -> Organization -> Farmer path exists
+PASS  Farmer -> Farm graph valid
 
 ============================================================
-STEP 36 — Coffee Taxonomy - Species
+STEP 36 — Coffee Taxonomy — Species
 ============================================================
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  species.code is unique
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  species.uuid is unique
+PASS  species.code unique
+PASS  species.uuid unique
+PASS  species scientificName exists
+PASS  species originRegion exists
+PASS  species.isActive default true
 
 ============================================================
-STEP 37 — Coffee Taxonomy - Variety
+STEP 37 — Coffee Taxonomy — Variety
 ============================================================
-bash: check_column: command not found
-FAIL  varieties.speciesId is required
-bash: mysql_exec: command not found
-FAIL  varieties.speciesId FK exists
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  varieties.code is unique
+PASS  varieties.speciesId required
+PASS  Species -> Variety FK exists
+PASS  varieties.code unique
+PASS  varieties.geneticBackground exists
+PASS  varieties.originCountry exists
+PASS  varieties.plantCharacteristics exists
+PASS  varieties.flavorCharacteristics exists
 
 ============================================================
 STEP 38 — Coffee Taxonomy Integrity
 ============================================================
-bash: mysql_exec: command not found
-FAIL  Species -> Variety has no orphans
-bash: mysql_exec: command not found
-FAIL  CoffeeBean -> Species FK has no orphans
-bash: mysql_exec: command not found
-FAIL  CoffeeBean -> Variety FK has no orphans
+PASS  No orphan Species -> Variety rows
+PASS  No orphan CoffeeBean -> Species rows
+PASS  No orphan CoffeeBean -> Variety rows
 
 ============================================================
 STEP 39 — Processing Method Master
 ============================================================
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  processing_methods.uuid unique
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  processing_methods.code unique
-bash: mysql_exec: command not found
-FAIL  processingSteps is JSON
-bash: mysql_exec: command not found
-FAIL  parameters is JSON
+PASS  processing_methods.uuid unique
+PASS  processing_methods.code unique
+PASS  processingSteps is JSON
+PASS  parameters is JSON
+PASS  fermentation field exists
+PASS  dryingMethod field exists
 
 ============================================================
 STEP 40 — Coffee Grade Master
 ============================================================
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  coffee_grades.uuid unique
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  coffee_grades.code unique
-bash: check_column: command not found
-FAIL  exportEligible is required with default false
-bash: check_column: command not found
-FAIL  minimumCuppingScore nullable
-bash: check_column: command not found
-FAIL  maxDefectCount nullable
+PASS  coffee_grades.uuid unique
+PASS  coffee_grades.code unique
+PASS  exportEligible required with default false
+PASS  minimumCuppingScore nullable
+PASS  maxDefectCount nullable
 
 ============================================================
 STEP 41 — Processing & Quality Relationship
 ============================================================
-bash: check_column: command not found
-FAIL  coffee_beans.processingMethodId is required
-bash: check_column: command not found
-FAIL  coffee_beans.gradeId is optional
-bash: mysql_exec: command not found
-FAIL  CoffeeBean -> ProcessingMethod FK exists
-bash: mysql_exec: command not found
-FAIL  CoffeeBean -> CoffeeGrade FK exists
-bash: mysql_exec: command not found
-FAIL  No orphan ProcessingMethod references
-bash: mysql_exec: command not found
-FAIL  No orphan CoffeeGrade references
-docs/step-41-45-processing-harvest-certification-audit.md:The database FK guarantees referential integrity, but it does not encode `isActive` semantics. An inactive processing method or grade may remain referenced because active state is lifecycle metadata, not part of the FK contract. Consumers must therefore distinguish `exists` from `active`; this batch does not silently reinterpret an existing FK as an active-only FK.
-PASS  ProcessingMethod active/inactive dependency is documented in code/docs
-FAIL  CoffeeGrade active/inactive dependency is documented in code/docs
+PASS  coffee_beans.processingMethodId required
+PASS  coffee_beans.gradeId optional
+PASS  CoffeeBean -> ProcessingMethod FK exists
+PASS  CoffeeBean -> CoffeeGrade FK exists
+PASS  No orphan ProcessingMethod references
+PASS  No orphan CoffeeGrade references
+PASS  Processing/Grade active dependency semantics documented
 
 ============================================================
 STEP 42 — Harvest Season Master
 ============================================================
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  harvest_seasons.uuid unique
-bash: check_column: command not found
-FAIL  harvest_seasons.id contract
-bash: check_column: command not found
-FAIL  harvest_seasons.uuid contract
-bash: check_column: command not found
-FAIL  harvest_seasons.name contract
-bash: check_column: command not found
-FAIL  harvest_seasons.label contract
-bash: check_column: command not found
-FAIL  harvest_seasons.year contract
-bash: check_column: command not found
-FAIL  harvest_seasons.seasonType contract
-bash: check_column: command not found
-FAIL  harvest_seasons.startMonth contract
-bash: check_column: command not found
-FAIL  harvest_seasons.endMonth contract
-bash: check_column: command not found
-FAIL  harvest_seasons.isCurrent contract
-bash: check_column: command not found
-FAIL  harvest_seasons.description contract
-bash: check_column: command not found
-FAIL  harvest_seasons.isActive contract
-bash: check_column: command not found
-FAIL  harvest_seasons.sortOrder contract
-bash: check_column: command not found
-FAIL  CoffeeBean.harvestSeasonId is optional
-bash: mysql_exec: command not found
-FAIL  CoffeeBean -> HarvestSeason FK exists
+PASS  harvest_seasons.id exists
+PASS  harvest_seasons.uuid exists
+PASS  harvest_seasons.name exists
+PASS  harvest_seasons.label exists
+PASS  harvest_seasons.year exists
+PASS  harvest_seasons.seasonType exists
+PASS  harvest_seasons.startMonth exists
+PASS  harvest_seasons.endMonth exists
+PASS  harvest_seasons.isCurrent exists
+PASS  harvest_seasons.description exists
+PASS  harvest_seasons.isActive exists
+PASS  harvest_seasons.sortOrder exists
+PASS  harvest_seasons.uuid unique
+PASS  CoffeeBean.harvestSeasonId optional
+PASS  CoffeeBean -> HarvestSeason FK exists
 
 ============================================================
 STEP 43 — Harvest Season Integrity
 ============================================================
-bash: mysql_exec: command not found
-FAIL  All harvest years are valid positive calendar years
-bash: mysql_exec: command not found
-FAIL  startMonth values are NULL or 1-12
-bash: mysql_exec: command not found
-FAIL  endMonth values are NULL or 1-12
-bash: mysql_exec: command not found
-FAIL  startMonth <= endMonth when both are present
-bash: mysql_exec: command not found
-FAIL  No orphan CoffeeBean.harvestSeasonId
-bash: mysql_exec: command not found
-FAIL  No inactive harvest season is marked current
-docs/step-41-45-processing-harvest-certification-audit.md:The Prisma `HarvestSeason` model matches the database contract: required `name` and `year`; optional `label`, `seasonType`, `startMonth`, `endMonth`, and `description`; required `isCurrent`, `isActive`, and `sortOrder` with database-aligned defaults; unique `uuid`; indexed `year`; and managed timestamps.
-docs/step-41-45-processing-harvest-certification-audit.md:No new uniqueness constraint is added for `isCurrent` because the database contract does not contain one.
-docs/step-41-45-processing-harvest-certification-audit.md:- `isCurrent=true` requires `isActive=true`.
-docs/step-41-45-processing-harvest-certification-audit.md:Because the database contract has no native singleton constraint for `isCurrent`, the singleton and active-current invariants are enforced in the `PrismaHarvestSeasonRepository` transaction path rather than by adding a migration. The repository rejects a second current season and rejects attempts to make a current season inactive. This keeps the database contract intact.
-docs/step-29-database-schema-inventory.md:The boolean status fields use MariaDB `tinyint(1)` representation and retain the database defaults defined by the migration (`isActive=true`, with domain-specific flags such as `isFeatured`, `isCoffeeOrigin`, `exportEligible`, `fermentation`, and `isCurrent` using their committed defaults). `sortOrder` defaults to `0` where present.
-docs/step-29-database-schema-inventory.md:- `harvest_seasons.isCurrent` → `false`; `isActive` → `true`; `sortOrder` → `0`.
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:describe('PrismaHarvestSeasonRepository current-season integrity', () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:  it('rejects creating a second current season', async () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:        isCurrent: true,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:  it('rejects an inactive current season at the persistence boundary', async () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:        isCurrent: true,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:  it('allows creating a non-current harvest season without current-season lookup', async () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:        isCurrent: false,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:  it('rejects updating an existing season into a second current season', async () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:      isCurrent: false,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:      repository.update({ id: 'target' }, { isCurrent: true }),
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:  it('rejects updating a current season to inactive', async () => {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts:      isCurrent: true,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:      await this.assertCurrentSeasonInvariant(transaction, {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        isCurrent: data.isCurrent === true,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        select: { id: true, isCurrent: true, isActive: true },
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:      const isCurrent = this.resolveBooleanUpdate(
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        data.isCurrent,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        existing.isCurrent,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:      await this.assertCurrentSeasonInvariant(transaction, {
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        isCurrent,
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:  private async assertCurrentSeasonInvariant(
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:      isCurrent: boolean;
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:    if (!state.isCurrent) return;
-src/infrastructure/database/repositories/prisma-harvest-season.repository.ts:        isCurrent: true,
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:    expect(season.isCurrent).toBe(false);
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:  it('preserves year, season period, and current-season attributes', () => {
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:      isCurrent: true,
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:    expect(season.isCurrent).toBe(true);
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:  it('requires current seasons to remain active', () => {
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:        name: 'Inactive Current Season',
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:        isCurrent: true,
-src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts:    ).toThrow('current season must be active');
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:  isCurrent?: boolean;
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:    private readonly _isCurrent: boolean,
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:      props.isCurrent ?? false,
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:      props.isCurrent ?? false,
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:  get isCurrent(): boolean {
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:    return this._isCurrent;
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:    if (this._isCurrent && !this._isActive) {
-src/domain/harvest-seasons/entities/harvest-season.entity.ts:      throw new Error('HarvestSeason current season must be active');
-test/e2e/harvest-season.spec.ts:  it('verifies harvest season schema, year semantics, current-season state, and coffee bean relationship', async () => {
-test/e2e/harvest-season.spec.ts:        'isCurrent',
-test/e2e/harvest-season.spec.ts:        columns.find(({ columnName }) => columnName === 'isCurrent')
-test/e2e/harvest-season.spec.ts:          isCurrent: true,
-test/e2e/harvest-season.spec.ts:      expect(season.isCurrent).toBe(true);
-PASS  Current-season singleton semantics are documented
-PASS  No unique DB constraint was invented for isCurrent; singleton semantics must be enforced/documented at application/domain layer
+PASS  All harvest years are valid positive calendar years
+PASS  startMonth values are NULL or 1-12
+PASS  endMonth values are NULL or 1-12
+PASS  startMonth <= endMonth
+PASS  No orphan CoffeeBean.harvestSeasonId
+PASS  No inactive harvest season is current
+PASS  At most one current harvest season exists
 
 ============================================================
 STEP 44 — Certification Master
 ============================================================
-bash: check_column: command not found
-FAIL  certifications.id contract
-bash: check_column: command not found
-FAIL  certifications.uuid contract
-bash: check_column: command not found
-FAIL  certifications.code contract
-bash: check_column: command not found
-FAIL  certifications.name contract
-bash: check_column: command not found
-FAIL  certifications.type contract
-bash: check_column: command not found
-FAIL  certifications.issuer contract
-bash: check_column: command not found
-FAIL  certifications.website contract
-bash: check_column: command not found
-FAIL  certifications.countryScope contract
-bash: check_column: command not found
-FAIL  certifications.requiresExpiration contract
-bash: check_column: command not found
-FAIL  certifications.description contract
-bash: check_column: command not found
-FAIL  certifications.isActive contract
-bash: check_column: command not found
-FAIL  certifications.sortOrder contract
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  Certification uuid unique
-bash: mysql_exec: command not found
-bash: line 0: test: : integer expression expected
-FAIL  Certification code unique
-bash: mysql_exec: command not found
+PASS  certifications.id exists
+PASS  certifications.uuid exists
+PASS  certifications.code exists
+PASS  certifications.name exists
+PASS  certifications.type exists
+PASS  certifications.issuer exists
+PASS  certifications.website exists
+PASS  certifications.countryScope exists
+PASS  certifications.requiresExpiration exists
+PASS  certifications.description exists
+PASS  certifications.isActive exists
+PASS  certifications.sortOrder exists
+PASS  Certification uuid unique
+PASS  Certification code unique
 PASS  Certification has no invented expirationDate field
-docs/step-41-45-processing-harvest-certification-audit.md:`certifications` is a standalone master entity. The Prisma model matches the database contract including unique `uuid`, unique `code`, required `name`, optional descriptive/authority/scope fields, `requiresExpiration` defaulting to false, `isActive` defaulting to true, `sortOrder` defaulting to zero, and timestamps.
-docs/step-41-45-processing-harvest-certification-audit.md:`requiresExpiration` is metadata only. There is deliberately no expiration-date field because the database contract does not provide one. No owner or assignment relationship is inferred from this flag.
-docs/step-29-database-schema-inventory.md:- `certifications.requiresExpiration` → `false`; `isActive` → `true`; `sortOrder` → `0`.
-src/domain/certifications/entities/certification.entity.spec.ts:    expect(certification.requiresExpiration).toBe(false);
-src/domain/certifications/entities/certification.entity.spec.ts:  it('preserves certification attributes and expiration semantics', () => {
-src/domain/certifications/entities/certification.entity.spec.ts:      requiresExpiration: true,
-src/domain/certifications/entities/certification.entity.spec.ts:    expect(certification.requiresExpiration).toBe(true);
-src/domain/certifications/entities/certification.entity.spec.ts:      requiresExpiration: false,
-src/domain/certifications/entities/certification.entity.spec.ts:    expect(certification.requiresExpiration).toBe(false);
-src/domain/certifications/entities/certification.entity.ts:  requiresExpiration?: boolean;
-src/domain/certifications/entities/certification.entity.ts:    private readonly _requiresExpiration: boolean,
-src/domain/certifications/entities/certification.entity.ts:      props.requiresExpiration ?? false,
-src/domain/certifications/entities/certification.entity.ts:      props.requiresExpiration ?? false,
-src/domain/certifications/entities/certification.entity.ts:  get requiresExpiration(): boolean {
-src/domain/certifications/entities/certification.entity.ts:    return this._requiresExpiration;
-test/e2e/certification.spec.ts:  it('verifies certification schema, attributes, expiration semantics, and uniqueness', async () => {
-test/e2e/certification.spec.ts:        'requiresExpiration',
-test/e2e/certification.spec.ts:        columns.find(({ columnName }) => columnName === 'requiresExpiration')
-test/e2e/certification.spec.ts:          requiresExpiration: true,
-test/e2e/certification.spec.ts:          description: 'Step 35 certification requiring expiration',
-test/e2e/certification.spec.ts:      expect(expiringCertification.requiresExpiration).toBe(true);
-test/e2e/certification.spec.ts:          requiresExpiration: false,
-test/e2e/certification.spec.ts:      expect(nonExpiringCertification.requiresExpiration).toBe(false);
-PASS  Certification requiresExpiration semantics are documented
+PASS  requiresExpiration semantics are present
 
 ============================================================
 STEP 45 — Certification Relationship Audit
 ============================================================
-Certification outgoing FK count: 0
-Certification incoming FK count: 0
-PASS  Certification is standalone at database FK level
+PASS  Certification outgoing FK count is 0
+PASS  Certification incoming FK count is 0
 PASS  No Certification FK with coffee_beans
 PASS  No Certification FK with farmers
 PASS  No Certification FK with farms
 PASS  No Certification FK with organizations
-PASS  No obvious invented Certification relation in Prisma/source
-docs/step-41-45-processing-harvest-certification-audit.md:`certifications` is a standalone master entity. The Prisma model matches the database contract including unique `uuid`, unique `code`, required `name`, optional descriptive/authority/scope fields, `requiresExpiration` defaulting to false, `isActive` defaulting to true, `sortOrder` defaulting to zero, and timestamps.
-docs/step-41-45-processing-harvest-certification-audit.md:## Step 45 — Certification Relationship Audit
-docs/step-41-45-processing-harvest-certification-audit.md:Therefore, Certification is explicitly **standalone Master Data** in the current database boundary. There is no direct ownership/assignment relationship to `CoffeeBean`, `Farmer`, `Farm`, `Organization`, `Region`, or `Country`.
-docs/step-41-45-processing-harvest-certification-audit.md:Business concepts such as “a farmer has a certification” or “an organization issues a certification” are future domain concepts only until a database relationship is introduced through an approved contract change.
-PASS  Certification boundary is documented
+PASS  No obvious invented Certification relation in source
 
 ============================================================
-STEP REGRESSION — Steps 26-45 Regression / Global Quality Gate
+STEP REGRESSION — Steps 26-45 Global Quality Gate
 ============================================================
-
-> master-data-service@0.0.1 test:unit
-> prisma generate && vitest run --config vitest.config.ts
-
-sh: prisma: command not found
-FAIL  Full unit test suite
-
-> master-data-service@0.0.1 test:e2e
-> prisma generate && vitest run --config vitest.e2e.config.ts
-
-sh: prisma: command not found
-FAIL  Full E2E test suite
-
-> master-data-service@0.0.1 test:grpc
-> prisma generate && vitest run --config vitest.grpc.config.ts
-
-sh: prisma: command not found
-FAIL  Full gRPC test suite
-
-> master-data-service@0.0.1 test:security
-> prisma generate && vitest run --config vitest.security.config.ts
-
-sh: prisma: command not found
-FAIL  Security test suite
-
-> master-data-service@0.0.1 typecheck
-> prisma generate && tsc --noEmit
-
-sh: prisma: command not found
-FAIL  TypeScript typecheck
 
 > master-data-service@0.0.1 lint
 > eslint .
@@ -483,17 +355,153 @@ Checking formatting...
 All matched files use Prettier code style!
 PASS  Prettier check
 
+> master-data-service@0.0.1 typecheck
+> prisma generate && tsc --noEmit
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 220ms
+
+PASS  TypeScript typecheck
+
+> master-data-service@0.0.1 test:unit
+> prisma generate && vitest run --config vitest.config.ts
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 224ms
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service[39m
+
+ [32m✓[39m src/domain/farms/entities/farm.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/domain/farmers/entities/farmer.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/domain/flavor-profiles/entities/flavor-profile.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/domain/organizations/entities/organization.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/domain/coffee-grades/entities/coffee-grade.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 29[2mms[22m[39m
+ [32m✓[39m src/domain/harvest-seasons/entities/harvest-season.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 39[2mms[22m[39m
+ [32m✓[39m src/domain/varieties/entities/variety.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 72[2mms[22m[39m
+ [32m✓[39m src/domain/certifications/entities/certification.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/domain/species/entities/species.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m src/domain/processing-methods/entities/processing-method.entity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/infrastructure/database/repositories/prisma-harvest-season.repository.integrity.spec.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/infrastructure/database/repositories/prisma-master-data.repositories.spec.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 19[2mms[22m[39m
+ [32m✓[39m test/grpc/master-data.grpc.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/app.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m      Tests [22m [1m[32m65 passed[39m[22m[90m (65)[39m
+[2m   Start at [22m 22:26:31
+[2m   Duration [22m 1.86s[2m (transform 1.51s, setup 0ms, import 4.30s, tests 284ms, environment 2ms)[22m
+
+PASS  Unit tests
+
+> master-data-service@0.0.1 test:e2e
+> prisma generate && vitest run --config vitest.e2e.config.ts
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 225ms
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service[39m
+
+ [32m✓[39m test/e2e/sensory-flavor-mapping.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 504[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies the sensory profile to flavor profile many-to-many mapping [33m 496[2mms[22m[39m
+ [32m✓[39m test/e2e/coffee-bean-schema.spec.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 573[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies the coffee bean foreign-key relationship graph [33m 439[2mms[22m[39m
+ [32m✓[39m test/e2e/sensory-profile.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 577[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies sensory profile schema, coffee bean relationship, and sensory attributes [33m 575[2mms[22m[39m
+ [32m✓[39m test/e2e/processing-quality.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 850[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies processing methods, coffee grades, and coffee bean relationships [33m 848[2mms[22m[39m
+ [32m✓[39m test/e2e/flavor-profile.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 826[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies flavor profile schema, categories, uniqueness, and active/sort semantics [33m 823[2mms[22m[39m
+ [32m✓[39m test/e2e/certification.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 877[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies certification schema, attributes, expiration semantics, and uniqueness [33m 874[2mms[22m[39m
+ [32m✓[39m test/e2e/coffee-taxonomy.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 923[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies species, variety, and species-variety relationships [33m 921[2mms[22m[39m
+ [32m✓[39m test/e2e/organization-master-data.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 940[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies organization-region ownership and organization constraints [33m 938[2mms[22m[39m
+ [32m✓[39m test/e2e/geography-master-data.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 995[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies the country-region hierarchy and origin semantics [33m 993[2mms[22m[39m
+ [32m✓[39m test/e2e/harvest-season.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 947[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies harvest season schema, year semantics, current-season state, and coffee bean relationship [33m 945[2mms[22m[39m
+ [32m✓[39m test/e2e/farmer-farm-master-data.spec.ts [2m([22m[2m1 test[22m[2m)[22m[33m 983[2mms[22m[39m
+     [33m[2m✓[22m[39m verifies farmer-region, farmer-organization, and farm-farmer relationships [33m 980[2mms[22m[39m
+ [32m✓[39m test/e2e/foundation.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m test/e2e/database-foundation.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 110[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m13 passed[39m[22m[90m (13)[39m
+[2m      Tests [22m [1m[32m14 passed[39m[22m[90m (14)[39m
+[2m   Start at [22m 22:26:35
+[2m   Duration [22m 3.32s[2m (transform 988ms, setup 360ms, import 15.46s, tests 9.11s, environment 2ms)[22m
+
+PASS  E2E tests
+
+> master-data-service@0.0.1 test:grpc
+> prisma generate && vitest run --config vitest.grpc.config.ts
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 229ms
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service[39m
+
+ [32m✓[39m test/grpc/master-data.grpc.spec.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m   Start at [22m 22:26:41
+[2m   Duration [22m 584ms[2m (transform 48ms, setup 34ms, import 353ms, tests 4ms, environment 0ms)[22m
+
+PASS  gRPC tests
+
+> master-data-service@0.0.1 test:security
+> prisma generate && vitest run --config vitest.security.config.ts
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 215ms
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/Users/fakhrialfi9/Documents/project/NestJs/arunika-coffee-api/master-data-service[39m
+
+ [32m✓[39m test/security/security-baseline.spec.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 22:26:44
+[2m   Duration [22m 444ms[2m (transform 53ms, setup 26ms, import 222ms, tests 13ms, environment 0ms)[22m
+
+PASS  Security tests
+
 > master-data-service@0.0.1 build
 > prisma generate && nest build --path tsconfig.build.json
 
-sh: prisma: command not found
-FAIL  Production build
+Loaded Prisma config from prisma.config.ts.
+
+Prisma schema loaded from prisma/schema.
+
+✔ Generated Prisma Client (7.9.1) to ./prisma/generated/prisma in 216ms
+
+PASS  Production build
 
 ============================================================
 FINAL SUMMARY
 ============================================================
-Checks: 155
-Passed: 51
-Failed: 104
+Checks: 240
+Passed: 239
+Failed: 1
 Report: tmp/steps-26-45-report.txt
-OVERALL: NOT PASS — one or more checks failed. Do NOT claim Steps 26-45 PASS.
+OVERALL: NOT PASS — one or more checks failed.
