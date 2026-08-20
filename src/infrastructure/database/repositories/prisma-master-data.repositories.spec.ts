@@ -69,7 +69,10 @@ const createPrismaError = (code: string, meta?: unknown): PrismaError => {
 describe('Prisma master data repositories', () => {
   it('routes UUID reads through every master data repository', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(),
     } as unknown as PrismaTransactionService;
@@ -86,7 +89,10 @@ describe('Prisma master data repositories', () => {
 
   it('executes create, update, and delete through the transaction boundary', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -109,7 +115,10 @@ describe('Prisma master data repositories', () => {
 
   it('preserves Prisma JSON input without transforming persisted JSON values', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -132,7 +141,10 @@ describe('Prisma master data repositories', () => {
     delegate.create.mockRejectedValue(
       createPrismaError('P2002', { target: ['code'] }),
     );
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -157,7 +169,10 @@ describe('Prisma master data repositories', () => {
         field_name: 'CoffeeBean_regionId_fkey',
       }),
     );
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -178,7 +193,10 @@ describe('Prisma master data repositories', () => {
   it('maps Prisma not-found violations to RepositoryNotFoundError', async () => {
     const delegate = createDelegate();
     delegate.update.mockRejectedValue(createPrismaError('P2025'));
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -195,7 +213,10 @@ describe('Prisma master data repositories', () => {
   it('maps unexpected persistence failures to RepositoryPersistenceError', async () => {
     const delegate = createDelegate();
     delegate.delete.mockRejectedValue(new Error('database connection failed'));
-    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const prisma = new Proxy(
+      {},
+      { get: () => delegate },
+    ) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
