@@ -4,6 +4,20 @@ import { describe, expect, it } from 'vitest';
 
 import { PrismaService } from '../../src/infrastructure/database/prisma.service.js';
 
+const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+const toAlphabeticCode = (seed: bigint, length: number): string => {
+  let value = seed;
+  let code = '';
+
+  for (let index = 0; index < length; index += 1) {
+    code = ALPHABET[Number(value % 26n)] + code;
+    value /= 26n;
+  }
+
+  return code;
+};
+
 describe('Step 31 farmer and farm master data', () => {
   it('verifies farmer-region, farmer-organization, and farm-farmer relationships', async () => {
     const prisma = new PrismaService();
@@ -107,12 +121,35 @@ describe('Step 31 farmer and farm master data', () => {
         },
       ]);
 
+      const existingCountryCodes = await prisma.country.findMany({
+        select: { iso2: true, iso3: true },
+      });
+      const usedIso2 = new Set(existingCountryCodes.map(({ iso2 }) => iso2));
+      const usedIso3 = new Set(existingCountryCodes.map(({ iso3 }) => iso3));
+      const seed = BigInt(`0x${suffix}`);
+
+      let iso2 = '';
+      let iso3 = '';
+      for (let offset = 0n; offset < 17_576n; offset += 1n) {
+        const candidateIso2 = toAlphabeticCode(seed + offset, 2);
+        const candidateIso3 = toAlphabeticCode(seed + offset, 3);
+
+        if (!usedIso2.has(candidateIso2) && !usedIso3.has(candidateIso3)) {
+          iso2 = candidateIso2;
+          iso3 = candidateIso3;
+          break;
+        }
+      }
+
+      expect(iso2).toHaveLength(2);
+      expect(iso3).toHaveLength(3);
+
       const country = await prisma.country.create({
         data: {
           code: countryCode,
           name: 'Step 31 Test Country',
-          iso2: `C${suffix.slice(0, 1)}`,
-          iso3: `O31${suffix.slice(0, 2)}`,
+          iso2,
+          iso3,
         },
       });
       countryId = country.id;
