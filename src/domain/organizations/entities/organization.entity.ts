@@ -65,9 +65,7 @@ export class Organization {
     ).validate();
   }
 
-  static reconstitute(
-    props: ReconstituteOrganizationProps,
-  ): Organization {
+  static reconstitute(props: ReconstituteOrganizationProps): Organization {
     return new Organization(
       props.uuid,
       props.code,
