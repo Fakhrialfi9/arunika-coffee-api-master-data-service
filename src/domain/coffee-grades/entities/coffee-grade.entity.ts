@@ -77,19 +77,45 @@ export class CoffeeGrade {
     ).validate();
   }
 
-  get uuid(): string { return this._uuid; }
-  get code(): string { return this._code; }
-  get name(): string { return this._name; }
-  get category(): string | null { return this._category; }
-  get standard(): string | null { return this._standard; }
-  get minimumCuppingScore(): number | null { return this._minimumCuppingScore; }
-  get maxDefectCount(): number | null { return this._maxDefectCount; }
-  get exportEligible(): boolean { return this._exportEligible; }
-  get description(): string | null { return this._description; }
-  get isActive(): boolean { return this._isActive; }
-  get sortOrder(): number { return this._sortOrder; }
-  get createdAt(): Date { return new Date(this._createdAt.getTime()); }
-  get updatedAt(): Date { return new Date(this._updatedAt.getTime()); }
+  get uuid(): string {
+    return this._uuid;
+  }
+  get code(): string {
+    return this._code;
+  }
+  get name(): string {
+    return this._name;
+  }
+  get category(): string | null {
+    return this._category;
+  }
+  get standard(): string | null {
+    return this._standard;
+  }
+  get minimumCuppingScore(): number | null {
+    return this._minimumCuppingScore;
+  }
+  get maxDefectCount(): number | null {
+    return this._maxDefectCount;
+  }
+  get exportEligible(): boolean {
+    return this._exportEligible;
+  }
+  get description(): string | null {
+    return this._description;
+  }
+  get isActive(): boolean {
+    return this._isActive;
+  }
+  get sortOrder(): number {
+    return this._sortOrder;
+  }
+  get createdAt(): Date {
+    return new Date(this._createdAt.getTime());
+  }
+  get updatedAt(): Date {
+    return new Date(this._updatedAt.getTime());
+  }
 
   private validate(): CoffeeGrade {
     CoffeeGrade.validateUuid(this._uuid);
@@ -110,18 +136,27 @@ export class CoffeeGrade {
   }
 
   private static validateUuid(uuid: string): void {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        uuid,
+      )
+    ) {
       throw new Error('CoffeeGrade uuid must be a valid UUID');
     }
   }
 
   private static validateRequiredString(value: string, field: string): void {
     if (value.trim().length === 0 || value.length > 191) {
-      throw new Error(`CoffeeGrade ${field} must contain between 1 and 191 characters`);
+      throw new Error(
+        `CoffeeGrade ${field} must contain between 1 and 191 characters`,
+      );
     }
   }
 
-  private static validateOptionalString(value: string | null, field: string): void {
+  private static validateOptionalString(
+    value: string | null,
+    field: string,
+  ): void {
     if (value !== null && value.length > 191) {
       throw new Error(`CoffeeGrade ${field} must not exceed 191 characters`);
     }

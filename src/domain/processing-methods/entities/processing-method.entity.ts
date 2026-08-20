@@ -91,32 +91,73 @@ export class ProcessingMethod {
     ).validate();
   }
 
-  get uuid(): string { return this._uuid; }
-  get code(): string { return this._code; }
-  get name(): string { return this._name; }
-  get category(): string | null { return this._category; }
-  get fermentation(): boolean { return this._fermentation; }
-  get fermentationType(): string | null { return this._fermentationType; }
-  get fermentationDuration(): string | null { return this._fermentationDuration; }
-  get dryingMethod(): string | null { return this._dryingMethod; }
-  get dryingDuration(): string | null { return this._dryingDuration; }
-  get processingSteps(): unknown { return this._processingSteps; }
-  get parameters(): unknown { return this._parameters; }
-  get description(): string | null { return this._description; }
-  get isActive(): boolean { return this._isActive; }
-  get sortOrder(): number { return this._sortOrder; }
-  get createdAt(): Date { return new Date(this._createdAt.getTime()); }
-  get updatedAt(): Date { return new Date(this._updatedAt.getTime()); }
+  get uuid(): string {
+    return this._uuid;
+  }
+  get code(): string {
+    return this._code;
+  }
+  get name(): string {
+    return this._name;
+  }
+  get category(): string | null {
+    return this._category;
+  }
+  get fermentation(): boolean {
+    return this._fermentation;
+  }
+  get fermentationType(): string | null {
+    return this._fermentationType;
+  }
+  get fermentationDuration(): string | null {
+    return this._fermentationDuration;
+  }
+  get dryingMethod(): string | null {
+    return this._dryingMethod;
+  }
+  get dryingDuration(): string | null {
+    return this._dryingDuration;
+  }
+  get processingSteps(): unknown {
+    return this._processingSteps;
+  }
+  get parameters(): unknown {
+    return this._parameters;
+  }
+  get description(): string | null {
+    return this._description;
+  }
+  get isActive(): boolean {
+    return this._isActive;
+  }
+  get sortOrder(): number {
+    return this._sortOrder;
+  }
+  get createdAt(): Date {
+    return new Date(this._createdAt.getTime());
+  }
+  get updatedAt(): Date {
+    return new Date(this._updatedAt.getTime());
+  }
 
   private validate(): ProcessingMethod {
     ProcessingMethod.validateUuid(this._uuid);
     ProcessingMethod.validateRequiredString(this._code, 'code');
     ProcessingMethod.validateRequiredString(this._name, 'name');
     ProcessingMethod.validateOptionalString(this._category, 'category');
-    ProcessingMethod.validateOptionalString(this._fermentationType, 'fermentationType');
-    ProcessingMethod.validateOptionalString(this._fermentationDuration, 'fermentationDuration');
+    ProcessingMethod.validateOptionalString(
+      this._fermentationType,
+      'fermentationType',
+    );
+    ProcessingMethod.validateOptionalString(
+      this._fermentationDuration,
+      'fermentationDuration',
+    );
     ProcessingMethod.validateOptionalString(this._dryingMethod, 'dryingMethod');
-    ProcessingMethod.validateOptionalString(this._dryingDuration, 'dryingDuration');
+    ProcessingMethod.validateOptionalString(
+      this._dryingDuration,
+      'dryingDuration',
+    );
     ProcessingMethod.validateOptionalString(this._description, 'description');
 
     if (Number.isNaN(this._createdAt.getTime())) {
@@ -130,20 +171,31 @@ export class ProcessingMethod {
   }
 
   private static validateUuid(uuid: string): void {
-    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(uuid)) {
+    if (
+      !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        uuid,
+      )
+    ) {
       throw new Error('ProcessingMethod uuid must be a valid UUID');
     }
   }
 
   private static validateRequiredString(value: string, field: string): void {
     if (value.trim().length === 0 || value.length > 191) {
-      throw new Error(`ProcessingMethod ${field} must contain between 1 and 191 characters`);
+      throw new Error(
+        `ProcessingMethod ${field} must contain between 1 and 191 characters`,
+      );
     }
   }
 
-  private static validateOptionalString(value: string | null, field: string): void {
+  private static validateOptionalString(
+    value: string | null,
+    field: string,
+  ): void {
     if (value !== null && value.length > 191) {
-      throw new Error(`ProcessingMethod ${field} must not exceed 191 characters`);
+      throw new Error(
+        `ProcessingMethod ${field} must not exceed 191 characters`,
+      );
     }
   }
 }

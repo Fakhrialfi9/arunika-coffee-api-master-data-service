@@ -127,8 +127,9 @@ describe('Step 33 processing and quality master data', () => {
       ]);
 
       expect(
-        processingColumns.find(({ columnName }) => columnName === 'fermentation')
-          ?.isNullable,
+        processingColumns.find(
+          ({ columnName }) => columnName === 'fermentation',
+        )?.isNullable,
       ).toBe('NO');
       expect(
         gradeColumns.find(({ columnName }) => columnName === 'exportEligible')
@@ -209,7 +210,9 @@ describe('Step 33 processing and quality master data', () => {
       }
 
       if (processingMethodId !== undefined) {
-        await prisma.processingMethod.delete({ where: { id: processingMethodId } });
+        await prisma.processingMethod.delete({
+          where: { id: processingMethodId },
+        });
       }
 
       await prisma.onApplicationShutdown();
