@@ -38,7 +38,9 @@ describe('Step 28 database foundation', () => {
     try {
       await prisma.onModuleInit();
 
-      const databaseRows = await prisma.$queryRaw<Array<{ databaseName: string }>>`
+      const databaseRows = await prisma.$queryRaw<
+        Array<{ databaseName: string }>
+      >`
         SELECT DATABASE() AS databaseName
       `;
 
@@ -54,12 +56,16 @@ describe('Step 28 database foundation', () => {
       const actualTables = new Set(tableRows.map(({ tableName }) => tableName));
 
       for (const tableName of EXPECTED_TABLES) {
-        expect(actualTables.has(tableName), `Missing table: ${tableName}`).toBe(true);
+        expect(actualTables.has(tableName), `Missing table: ${tableName}`).toBe(
+          true,
+        );
       }
 
       expect(actualTables.has('_prisma_migrations')).toBe(true);
 
-      const migrationRows = await prisma.$queryRaw<Array<{ appliedCount: bigint }>>`
+      const migrationRows = await prisma.$queryRaw<
+        Array<{ appliedCount: bigint }>
+      >`
         SELECT COUNT(*) AS appliedCount
         FROM _prisma_migrations
         WHERE finished_at IS NOT NULL
