@@ -146,7 +146,9 @@ describe('Step 29 geography master data', () => {
       }
 
       if (originCountryId !== undefined) {
-        await prisma.region.deleteMany({ where: { countryId: originCountryId } });
+        await prisma.region.deleteMany({
+          where: { countryId: originCountryId },
+        });
         await prisma.country.delete({ where: { id: originCountryId } });
       }
 
