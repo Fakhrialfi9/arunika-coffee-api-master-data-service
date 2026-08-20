@@ -27,32 +27,32 @@ export default tseslint.config(
       'tsconfig.eslint.json',
     ],
   },
+
   eslint.configs.recommended,
-  {
-    files: ['scripts/**/*.{js,mjs}'],
-    languageOptions: {
-      globals: {
-        ...globals.node,
-      },
-    },
-  },
+
   ...typeCheckedConfigs,
+
   {
     files: typescriptFiles,
+
     languageOptions: {
       globals: {
         ...globals.node,
       },
+
       parserOptions: {
         project: './tsconfig.eslint.json',
         tsconfigRootDir: import.meta.dirname,
       },
     },
+
     plugins: {
       prettier: prettierPlugin,
     },
+
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
+
       '@typescript-eslint/consistent-type-imports': [
         'error',
         {
@@ -60,10 +60,14 @@ export default tseslint.config(
           fixStyle: 'separate-type-imports',
         },
       ],
+
       '@typescript-eslint/no-floating-promises': 'error',
+
       '@typescript-eslint/no-misused-promises': 'error',
+
       'prettier/prettier': 'error',
     },
   },
+
   prettierConfig,
 );
