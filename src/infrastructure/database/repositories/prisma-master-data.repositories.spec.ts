@@ -33,10 +33,17 @@ const createDelegate = () => ({
   delete: vi.fn().mockResolvedValue({ uuid: 'uuid-1' }),
 });
 
+type RepositoryContract = {
+  findByUuid: (uuid: string) => Promise<unknown>;
+  create: (data: never) => Promise<unknown>;
+  update: (where: never, data: never) => Promise<unknown>;
+  delete: (where: never) => Promise<unknown>;
+};
+
 const createRepositories = (
   prisma: PrismaService,
   transactions: PrismaTransactionService,
-) => [
+): RepositoryContract[] => [
   new PrismaCertificationRepository(prisma, transactions),
   new PrismaCoffeeBeanRepository(prisma, transactions),
   new PrismaCoffeeGradeRepository(prisma, transactions),
@@ -104,8 +111,8 @@ describe('Prisma master data repositories', () => {
 
     for (const repository of repositories) {
       await repository.create({} as never);
-      await repository.update({ id: 'entity-1' }, {} as never);
-      await repository.delete({ id: 'entity-1' });
+      await repository.update({ id: 'entity-1' } as never, {} as never);
+      await repository.delete({ id: 'entity-1' } as never);
     }
 
     expect(run).toHaveBeenCalledTimes(repositories.length * 3);
@@ -207,7 +214,7 @@ describe('Prisma master data repositories', () => {
     const repository = new PrismaCountryRepository(prisma, transactions);
 
     await expect(
-      repository.update({ id: 'missing' }, {} as never),
+      repository.update({ id: 'missing' } as never, {} as never),
     ).rejects.toBeInstanceOf(RepositoryNotFoundError);
   });
 
@@ -226,8 +233,8 @@ describe('Prisma master data repositories', () => {
     } as unknown as PrismaTransactionService;
     const repository = new PrismaCountryRepository(prisma, transactions);
 
-    await expect(repository.delete({ id: 'entity-1' })).rejects.toBeInstanceOf(
-      RepositoryPersistenceError,
-    );
+    await expect(
+      repository.delete({ id: 'entity-1' } as never),
+    ).rejects.toBeInstanceOf(RepositoryPersistenceError);
   });
 });
