@@ -1,6 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { RepositoryForeignKeyError } from '../errors/repository.error.js';
+import {
+  RepositoryForeignKeyError,
+  RepositoryNotFoundError,
+  RepositoryPersistenceError,
+  RepositoryUniqueConstraintError,
+} from '../errors/repository.error.js';
 import type { PrismaTransactionService } from '../prisma-transaction.service.js';
 import type { PrismaService } from '../prisma.service.js';
 import { PrismaCertificationRepository } from './prisma-certification.repository.js';
@@ -49,13 +54,22 @@ const createRepositories = (
   new PrismaVarietyRepository(prisma, transactions),
 ];
 
+type PrismaError = Error & {
+  code: string;
+  meta?: unknown;
+};
+
+const createPrismaError = (code: string, meta?: unknown): PrismaError => {
+  const error = new Error(`Prisma error ${code}`) as PrismaError;
+  error.code = code;
+  if (meta !== undefined) error.meta = meta;
+  return error;
+};
+
 describe('Prisma master data repositories', () => {
   it('routes UUID reads through every master data repository', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy(
-      {},
-      { get: () => delegate },
-    ) as unknown as PrismaService;
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(),
     } as unknown as PrismaTransactionService;
@@ -72,10 +86,7 @@ describe('Prisma master data repositories', () => {
 
   it('executes create, update, and delete through the transaction boundary', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy(
-      {},
-      { get: () => delegate },
-    ) as unknown as PrismaService;
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -85,8 +96,8 @@ describe('Prisma master data repositories', () => {
     const repositories = createRepositories(prisma, transactions);
 
     for (const repository of repositories) {
-      await repository.create({});
-      await repository.update({ id: 'entity-1' }, {});
+      await repository.create({} as never);
+      await repository.update({ id: 'entity-1' }, {} as never);
       await repository.delete({ id: 'entity-1' });
     }
 
@@ -98,10 +109,7 @@ describe('Prisma master data repositories', () => {
 
   it('preserves Prisma JSON input without transforming persisted JSON values', async () => {
     const delegate = createDelegate();
-    const prisma = new Proxy(
-      {},
-      { get: () => delegate },
-    ) as unknown as PrismaService;
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -119,16 +127,37 @@ describe('Prisma master data repositories', () => {
     expect(delegate.create).toHaveBeenCalledWith({ data });
   });
 
+  it('maps Prisma unique violations to RepositoryUniqueConstraintError', async () => {
+    const delegate = createDelegate();
+    delegate.create.mockRejectedValue(
+      createPrismaError('P2002', { target: ['code'] }),
+    );
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const transactions = {
+      run: vi.fn(
+        async (operation: (transaction: unknown) => Promise<unknown>) =>
+          operation(new Proxy({}, { get: () => delegate })),
+      ),
+    } as unknown as PrismaTransactionService;
+    const repository = new PrismaCountryRepository(prisma, transactions);
+
+    await expect(repository.create({} as never)).rejects.toMatchObject({
+      code: 'REPOSITORY_UNIQUE_CONSTRAINT',
+      fields: ['code'],
+    });
+    await expect(repository.create({} as never)).rejects.toBeInstanceOf(
+      RepositoryUniqueConstraintError,
+    );
+  });
+
   it('maps Prisma foreign-key violations to RepositoryForeignKeyError', async () => {
     const delegate = createDelegate();
-    delegate.create.mockRejectedValue({
-      code: 'P2003',
-      meta: { field_name: 'CoffeeBean_regionId_fkey' },
-    });
-    const prisma = new Proxy(
-      {},
-      { get: () => delegate },
-    ) as unknown as PrismaService;
+    delegate.create.mockRejectedValue(
+      createPrismaError('P2003', {
+        field_name: 'CoffeeBean_regionId_fkey',
+      }),
+    );
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
     const transactions = {
       run: vi.fn(
         async (operation: (transaction: unknown) => Promise<unknown>) =>
@@ -137,12 +166,46 @@ describe('Prisma master data repositories', () => {
     } as unknown as PrismaTransactionService;
     const repository = new PrismaCoffeeBeanRepository(prisma, transactions);
 
-    await expect(repository.create({} as never)).rejects.toBeInstanceOf(
-      RepositoryForeignKeyError,
-    );
     await expect(repository.create({} as never)).rejects.toMatchObject({
       code: 'REPOSITORY_FOREIGN_KEY_VIOLATION',
       fields: ['CoffeeBean_regionId_fkey'],
     });
+    await expect(repository.create({} as never)).rejects.toBeInstanceOf(
+      RepositoryForeignKeyError,
+    );
+  });
+
+  it('maps Prisma not-found violations to RepositoryNotFoundError', async () => {
+    const delegate = createDelegate();
+    delegate.update.mockRejectedValue(createPrismaError('P2025'));
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const transactions = {
+      run: vi.fn(
+        async (operation: (transaction: unknown) => Promise<unknown>) =>
+          operation(new Proxy({}, { get: () => delegate })),
+      ),
+    } as unknown as PrismaTransactionService;
+    const repository = new PrismaCountryRepository(prisma, transactions);
+
+    await expect(
+      repository.update({ id: 'missing' }, {} as never),
+    ).rejects.toBeInstanceOf(RepositoryNotFoundError);
+  });
+
+  it('maps unexpected persistence failures to RepositoryPersistenceError', async () => {
+    const delegate = createDelegate();
+    delegate.delete.mockRejectedValue(new Error('database connection failed'));
+    const prisma = new Proxy({}, { get: () => delegate }) as unknown as PrismaService;
+    const transactions = {
+      run: vi.fn(
+        async (operation: (transaction: unknown) => Promise<unknown>) =>
+          operation(new Proxy({}, { get: () => delegate })),
+      ),
+    } as unknown as PrismaTransactionService;
+    const repository = new PrismaCountryRepository(prisma, transactions);
+
+    await expect(repository.delete({ id: 'entity-1' })).rejects.toBeInstanceOf(
+      RepositoryPersistenceError,
+    );
   });
 });
