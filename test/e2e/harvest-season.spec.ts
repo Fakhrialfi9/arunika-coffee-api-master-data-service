@@ -17,7 +17,11 @@ describe('Step 34 harvest season master data', () => {
       await prisma.onModuleInit();
 
       const columns = await prisma.$queryRaw<
-        Array<{ columnName: string; isNullable: string; columnDefault: string | null }>
+        Array<{
+          columnName: string;
+          isNullable: string;
+          columnDefault: string | null;
+        }>
       >`
         SELECT
           COLUMN_NAME AS columnName,
@@ -50,13 +54,16 @@ describe('Step 34 harvest season master data', () => {
         columns.find(({ columnName }) => columnName === 'year')?.isNullable,
       ).toBe('NO');
       expect(
-        columns.find(({ columnName }) => columnName === 'isCurrent')?.columnDefault,
+        columns.find(({ columnName }) => columnName === 'isCurrent')
+          ?.columnDefault,
       ).toBe('0');
       expect(
-        columns.find(({ columnName }) => columnName === 'isActive')?.columnDefault,
+        columns.find(({ columnName }) => columnName === 'isActive')
+          ?.columnDefault,
       ).toBe('1');
       expect(
-        columns.find(({ columnName }) => columnName === 'sortOrder')?.columnDefault,
+        columns.find(({ columnName }) => columnName === 'sortOrder')
+          ?.columnDefault,
       ).toBe('0');
 
       const yearIndexes = await prisma.$queryRaw<

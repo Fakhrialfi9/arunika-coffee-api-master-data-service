@@ -182,19 +182,20 @@ export class HarvestSeason {
 
   private static validateYear(year: number): void {
     if (!Number.isInteger(year) || year < 1 || year > 9999) {
-      throw new Error('HarvestSeason year must be an integer between 1 and 9999');
+      throw new Error(
+        'HarvestSeason year must be an integer between 1 and 9999',
+      );
     }
   }
 
-  private static validateMonth(
-    month: number | null,
-    field: string,
-  ): void {
+  private static validateMonth(month: number | null, field: string): void {
     if (
       month !== null &&
       (!Number.isInteger(month) || month < 1 || month > 12)
     ) {
-      throw new Error(`HarvestSeason ${field} must be an integer between 1 and 12`);
+      throw new Error(
+        `HarvestSeason ${field} must be an integer between 1 and 12`,
+      );
     }
   }
 }
