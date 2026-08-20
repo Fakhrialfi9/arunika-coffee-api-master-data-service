@@ -69,6 +69,17 @@ const EXPECTED_FOREIGN_KEYS: CoffeeBeanForeignKey[] = [
   },
 ];
 
+const EXPECTED_RELATION_COLUMN_ORDER = [
+  'regionId',
+  'farmerId',
+  'farmId',
+  'speciesId',
+  'varietyId',
+  'processingMethodId',
+  'gradeId',
+  'harvestSeasonId',
+];
+
 describe('Step 37 coffee bean master schema', () => {
   it('verifies the coffee bean foreign-key relationship graph', async () => {
     const prisma = new PrismaService();
@@ -90,10 +101,15 @@ describe('Step 37 coffee bean master schema', () => {
         WHERE kcu.CONSTRAINT_SCHEMA = DATABASE()
           AND kcu.TABLE_NAME = 'coffee_beans'
           AND kcu.REFERENCED_TABLE_NAME IS NOT NULL
-        ORDER BY kcu.COLUMN_NAME
       `;
 
-      expect(foreignKeys).toEqual(EXPECTED_FOREIGN_KEYS);
+      const orderedForeignKeys = [...foreignKeys].sort(
+        (a, b) =>
+          EXPECTED_RELATION_COLUMN_ORDER.indexOf(a.columnName) -
+          EXPECTED_RELATION_COLUMN_ORDER.indexOf(b.columnName),
+      );
+
+      expect(orderedForeignKeys).toEqual(EXPECTED_FOREIGN_KEYS);
     } finally {
       await prisma.onApplicationShutdown();
     }
@@ -124,18 +140,23 @@ describe('Step 37 coffee bean master schema', () => {
             'gradeId',
             'harvestSeasonId'
           )
-        ORDER BY COLUMN_NAME
       `;
 
-      expect(columns).toEqual([
-        { columnName: 'farmId', isNullable: 'YES' },
-        { columnName: 'farmerId', isNullable: 'YES' },
-        { columnName: 'gradeId', isNullable: 'YES' },
-        { columnName: 'harvestSeasonId', isNullable: 'YES' },
-        { columnName: 'processingMethodId', isNullable: 'NO' },
+      const orderedColumns = [...columns].sort(
+        (a, b) =>
+          EXPECTED_RELATION_COLUMN_ORDER.indexOf(a.columnName) -
+          EXPECTED_RELATION_COLUMN_ORDER.indexOf(b.columnName),
+      );
+
+      expect(orderedColumns).toEqual([
         { columnName: 'regionId', isNullable: 'NO' },
+        { columnName: 'farmerId', isNullable: 'YES' },
+        { columnName: 'farmId', isNullable: 'YES' },
         { columnName: 'speciesId', isNullable: 'NO' },
         { columnName: 'varietyId', isNullable: 'YES' },
+        { columnName: 'processingMethodId', isNullable: 'NO' },
+        { columnName: 'gradeId', isNullable: 'YES' },
+        { columnName: 'harvestSeasonId', isNullable: 'YES' },
       ]);
     } finally {
       await prisma.onApplicationShutdown();
