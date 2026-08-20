@@ -12,7 +12,7 @@ describe('Step 35 certification master data', () => {
     const certificationCode = `CERT-${suffix}`;
     const certificationName = `Step 35 Certification ${suffix}`;
 
-    let certificationId: string | undefined;
+    const certificationIds: string[] = [];
 
     try {
       await prisma.onModuleInit();
@@ -107,7 +107,7 @@ describe('Step 35 certification master data', () => {
           description: 'Step 35 certification requiring expiration',
         },
       });
-      certificationId = expiringCertification.id;
+      certificationIds.push(expiringCertification.id);
 
       expect(expiringCertification.uuid).toBe(certificationUuid);
       expect(expiringCertification.code).toBe(certificationCode);
@@ -130,6 +130,7 @@ describe('Step 35 certification master data', () => {
           requiresExpiration: false,
         },
       });
+      certificationIds.push(nonExpiringCertification.id);
 
       expect(nonExpiringCertification.requiresExpiration).toBe(false);
 
@@ -142,13 +143,9 @@ describe('Step 35 certification master data', () => {
           },
         }),
       ).rejects.toMatchObject({ code: 'P2002' });
-
-      await prisma.certifications.delete({
-        where: { id: nonExpiringCertification.id },
-      });
     } finally {
-      if (certificationId !== undefined) {
-        await prisma.certifications.delete({ where: { id: certificationId } });
+      for (const id of certificationIds) {
+        await prisma.certifications.delete({ where: { id } });
       }
 
       await prisma.onApplicationShutdown();
