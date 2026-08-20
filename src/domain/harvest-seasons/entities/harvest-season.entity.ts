@@ -174,9 +174,7 @@ export class HarvestSeason {
     field: string,
   ): void {
     if (value !== null && value.length > 191) {
-      throw new Error(
-        `HarvestSeason ${field} must not exceed 191 characters`,
-      );
+      throw new Error(`HarvestSeason ${field} must not exceed 191 characters`);
     }
   }
 
