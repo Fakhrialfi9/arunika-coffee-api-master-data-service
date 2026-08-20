@@ -7,42 +7,42 @@ import { PrismaBaseRepository } from './prisma-base.repository.js';
 export class PrismaCertificationRepository extends PrismaBaseRepository {
   findById(id: string) {
     return this.execute(() =>
-      this.prisma.certification.findUnique({ where: { id } }),
+      this.prisma.certifications.findUnique({ where: { id } }),
     );
   }
 
   findByUuid(uuid: string) {
     return this.execute(() =>
-      this.prisma.certification.findUnique({ where: { uuid } }),
+      this.prisma.certifications.findUnique({ where: { uuid } }),
     );
   }
 
-  findMany(args?: Prisma.CertificationFindManyArgs) {
-    return this.execute(() => this.prisma.certification.findMany(args));
+  findMany(args?: Prisma.CertificationsFindManyArgs) {
+    return this.execute(() => this.prisma.certifications.findMany(args));
   }
 
-  count(args?: Prisma.CertificationCountArgs) {
-    return this.execute(() => this.prisma.certification.count(args));
+  count(args?: Prisma.CertificationsCountArgs) {
+    return this.execute(() => this.prisma.certifications.count(args));
   }
 
-  create(data: Prisma.CertificationCreateInput) {
+  create(data: Prisma.CertificationsCreateInput) {
     return this.executeTransaction((transaction) =>
-      transaction.certification.create({ data }),
+      transaction.certifications.create({ data }),
     );
   }
 
   update(
-    where: Prisma.CertificationWhereUniqueInput,
-    data: Prisma.CertificationUpdateInput,
+    where: Prisma.CertificationsWhereUniqueInput,
+    data: Prisma.CertificationsUpdateInput,
   ) {
     return this.executeTransaction((transaction) =>
-      transaction.certification.update({ where, data }),
+      transaction.certifications.update({ where, data }),
     );
   }
 
-  delete(where: Prisma.CertificationWhereUniqueInput) {
+  delete(where: Prisma.CertificationsWhereUniqueInput) {
     return this.executeTransaction((transaction) =>
-      transaction.certification.delete({ where }),
+      transaction.certifications.delete({ where }),
     );
   }
 }
