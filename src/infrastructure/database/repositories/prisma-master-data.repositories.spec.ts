@@ -214,7 +214,7 @@ describe('Prisma master data repositories', () => {
     const repository = new PrismaCountryRepository(prisma, transactions);
 
     await expect(
-      repository.update({ id: 'missing' } as never, {} as never),
+      repository.update({ id: 'missing' }, {}),
     ).rejects.toBeInstanceOf(RepositoryNotFoundError);
   });
 
@@ -233,8 +233,8 @@ describe('Prisma master data repositories', () => {
     } as unknown as PrismaTransactionService;
     const repository = new PrismaCountryRepository(prisma, transactions);
 
-    await expect(
-      repository.delete({ id: 'entity-1' } as never),
-    ).rejects.toBeInstanceOf(RepositoryPersistenceError);
+    await expect(repository.delete({ id: 'entity-1' })).rejects.toBeInstanceOf(
+      RepositoryPersistenceError,
+    );
   });
 });
