@@ -7,42 +7,42 @@ import { PrismaBaseRepository } from './prisma-base.repository.js';
 export class PrismaFlavorProfileRepository extends PrismaBaseRepository {
   findById(id: string) {
     return this.execute(() =>
-      this.prisma.flavorProfile.findUnique({ where: { id } }),
+      this.prisma.flavorProfiles.findUnique({ where: { id } }),
     );
   }
 
   findByUuid(uuid: string) {
     return this.execute(() =>
-      this.prisma.flavorProfile.findUnique({ where: { uuid } }),
+      this.prisma.flavorProfiles.findUnique({ where: { uuid } }),
     );
   }
 
-  findMany(args?: Prisma.FlavorProfileFindManyArgs) {
-    return this.execute(() => this.prisma.flavorProfile.findMany(args));
+  findMany(args?: Prisma.FlavorProfilesFindManyArgs) {
+    return this.execute(() => this.prisma.flavorProfiles.findMany(args));
   }
 
-  count(args?: Prisma.FlavorProfileCountArgs) {
-    return this.execute(() => this.prisma.flavorProfile.count(args));
+  count(args?: Prisma.FlavorProfilesCountArgs) {
+    return this.execute(() => this.prisma.flavorProfiles.count(args));
   }
 
-  create(data: Prisma.FlavorProfileCreateInput) {
+  create(data: Prisma.FlavorProfilesCreateInput) {
     return this.executeTransaction((transaction) =>
-      transaction.flavorProfile.create({ data }),
+      transaction.flavorProfiles.create({ data }),
     );
   }
 
   update(
-    where: Prisma.FlavorProfileWhereUniqueInput,
-    data: Prisma.FlavorProfileUpdateInput,
+    where: Prisma.FlavorProfilesWhereUniqueInput,
+    data: Prisma.FlavorProfilesUpdateInput,
   ) {
     return this.executeTransaction((transaction) =>
-      transaction.flavorProfile.update({ where, data }),
+      transaction.flavorProfiles.update({ where, data }),
     );
   }
 
-  delete(where: Prisma.FlavorProfileWhereUniqueInput) {
+  delete(where: Prisma.FlavorProfilesWhereUniqueInput) {
     return this.executeTransaction((transaction) =>
-      transaction.flavorProfile.delete({ where }),
+      transaction.flavorProfiles.delete({ where }),
     );
   }
 }
