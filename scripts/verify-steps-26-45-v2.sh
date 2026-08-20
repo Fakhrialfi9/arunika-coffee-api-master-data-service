@@ -130,7 +130,7 @@ node -e 'const s=require("./package.json").scripts||{}; const r=["prisma:generat
 section "STEP 27 — Master Data Architecture"
 [[ -d src && -d test ]] && pass "src and test directories exist" || fail "src and test directories exist"
 find src -type d \( -iname domain -o -iname application -o -iname infrastructure -o -iname presentation \) | grep -q . && pass "Layered architecture concepts are represented" || fail "Layered architecture concepts are represented"
-if ! grep -R --include='*.ts' -E 'from ["'"']@prisma/client["'"']|from ["'"']prisma["'"']' src 2>/dev/null | grep -Ei 'controller|presentation'; then pass "Presentation layer has no direct Prisma import"; else fail "Presentation layer has no direct Prisma import"; fi
+if ! grep -R --include='*.ts' -E "from[[:space:]]+[\"'](@prisma/client|prisma)[\"']" src 2>/dev/null | grep -Ei 'controller|presentation'; then pass "Presentation layer has no direct Prisma import"; else fail "Presentation layer has no direct Prisma import"; fi
 if ! grep -R --include='*.ts' -E 'DATABASE_URL|new PrismaClient|createConnection|mariadb' src 2>/dev/null | grep -Ei 'controller|presentation'; then pass "Presentation layer has no direct DB access"; else fail "Presentation layer has no direct DB access"; fi
 [[ -n "$DATABASE_URL" ]] && pass "DATABASE_URL is configured" || fail "DATABASE_URL is configured"
 
