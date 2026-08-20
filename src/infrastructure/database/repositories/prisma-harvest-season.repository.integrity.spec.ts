@@ -41,7 +41,7 @@ describe('PrismaHarvestSeasonRepository current-season integrity', () => {
         name: '2026 Main Harvest',
         year: 2026,
         isCurrent: true,
-      } as never),
+      }),
     ).rejects.toBeInstanceOf(RepositoryBusinessRuleError);
 
     expect(delegate.create).not.toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe('PrismaHarvestSeasonRepository current-season integrity', () => {
         year: 2026,
         isCurrent: true,
         isActive: false,
-      } as never),
+      }),
     ).rejects.toMatchObject({
       code: 'REPOSITORY_BUSINESS_RULE_VIOLATION',
       rule: 'HARVEST_SEASON_CURRENT_MUST_BE_ACTIVE',
@@ -74,7 +74,7 @@ describe('PrismaHarvestSeasonRepository current-season integrity', () => {
         name: '2026 Secondary Harvest',
         year: 2026,
         isCurrent: false,
-      } as never),
+      }),
     ).resolves.toEqual({ id: 'created' });
 
     expect(delegate.findFirst).not.toHaveBeenCalled();
@@ -91,10 +91,7 @@ describe('PrismaHarvestSeasonRepository current-season integrity', () => {
     delegate.findFirst.mockResolvedValue({ id: 'existing-current' });
 
     await expect(
-      repository.update(
-        { id: 'target' },
-        { isCurrent: true },
-      ),
+      repository.update({ id: 'target' }, { isCurrent: true }),
     ).rejects.toMatchObject({
       code: 'REPOSITORY_BUSINESS_RULE_VIOLATION',
       rule: 'HARVEST_SEASON_SINGLE_CURRENT',
