@@ -41,7 +41,8 @@ describe('Step 26 security foundation', () => {
         ...validEnvironment,
         NODE_ENV: 'production',
         DATABASE_HOST: 'db.internal',
-        DATABASE_URL: 'mysql://app:strong-secret@db.internal:3306/arunika_coffee_master_data',
+        DATABASE_URL:
+          'mysql://app:strong-secret@db.internal:3306/arunika_coffee_master_data',
         DATABASE_USER: 'app',
         DATABASE_PASSWORD: 'strong-secret',
         APP_HOST: '0.0.0.0',
