@@ -6,11 +6,15 @@ import { PrismaBaseRepository } from './prisma-base.repository.js';
 @Injectable()
 export class PrismaVarietyRepository extends PrismaBaseRepository {
   findById(id: string) {
-    return this.execute(() => this.prisma.variety.findUnique({ where: { id } }));
+    return this.execute(() =>
+      this.prisma.variety.findUnique({ where: { id } }),
+    );
   }
 
   findByUuid(uuid: string) {
-    return this.execute(() => this.prisma.variety.findUnique({ where: { uuid } }));
+    return this.execute(() =>
+      this.prisma.variety.findUnique({ where: { uuid } }),
+    );
   }
 
   findMany(args?: Prisma.VarietyFindManyArgs) {
@@ -27,7 +31,10 @@ export class PrismaVarietyRepository extends PrismaBaseRepository {
     );
   }
 
-  update(where: Prisma.VarietyWhereUniqueInput, data: Prisma.VarietyUpdateInput) {
+  update(
+    where: Prisma.VarietyWhereUniqueInput,
+    data: Prisma.VarietyUpdateInput,
+  ) {
     return this.executeTransaction((transaction) =>
       transaction.variety.update({ where, data }),
     );

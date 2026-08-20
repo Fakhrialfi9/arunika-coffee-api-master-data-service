@@ -6,7 +6,9 @@ import { PrismaBaseRepository } from './prisma-base.repository.js';
 @Injectable()
 export class PrismaCoffeeBeanRepository extends PrismaBaseRepository {
   findById(id: string) {
-    return this.execute(() => this.prisma.coffeeBean.findUnique({ where: { id } }));
+    return this.execute(() =>
+      this.prisma.coffeeBean.findUnique({ where: { id } }),
+    );
   }
 
   findByUuid(uuid: string) {

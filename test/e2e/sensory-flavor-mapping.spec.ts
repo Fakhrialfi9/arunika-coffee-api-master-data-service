@@ -51,10 +51,7 @@ describe('Step 39 sensory flavor mapping', () => {
         'updatedAt',
       ]);
 
-      for (const columnName of [
-        'sensoryProfileId',
-        'flavorProfileId',
-      ]) {
+      for (const columnName of ['sensoryProfileId', 'flavorProfileId']) {
         expect(
           columns.find((column) => column.columnName === columnName)
             ?.isNullable,
@@ -90,12 +87,14 @@ describe('Step 39 sensory flavor mapping', () => {
           nonUnique: 1,
         },
         {
-          indexName: 'sensory_profile_flavors_sensoryProfileId_flavorProfileId_key',
+          indexName:
+            'sensory_profile_flavors_sensoryProfileId_flavorProfileId_key',
           columnName: 'sensoryProfileId',
           nonUnique: 0,
         },
         {
-          indexName: 'sensory_profile_flavors_sensoryProfileId_flavorProfileId_key',
+          indexName:
+            'sensory_profile_flavors_sensoryProfileId_flavorProfileId_key',
           columnName: 'flavorProfileId',
           nonUnique: 0,
         },
@@ -149,7 +148,11 @@ describe('Step 39 sensory flavor mapping', () => {
       ]);
 
       const mappingRelationships = await prisma.$queryRaw<
-        Array<{ tableName: string; columnName: string; referencedTableName: string }>
+        Array<{
+          tableName: string;
+          columnName: string;
+          referencedTableName: string;
+        }>
       >`
         SELECT
           TABLE_NAME AS tableName,

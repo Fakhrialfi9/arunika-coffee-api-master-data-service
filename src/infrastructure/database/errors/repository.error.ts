@@ -10,7 +10,10 @@ export abstract class RepositoryError extends Error {
 export class RepositoryUniqueConstraintError extends RepositoryError {
   readonly code = 'REPOSITORY_UNIQUE_CONSTRAINT';
 
-  constructor(public readonly fields: string[], cause?: unknown) {
+  constructor(
+    public readonly fields: string[],
+    cause?: unknown,
+  ) {
     super(`Unique constraint violated for ${fields.join(', ')}`, { cause });
   }
 }
@@ -18,7 +21,10 @@ export class RepositoryUniqueConstraintError extends RepositoryError {
 export class RepositoryForeignKeyError extends RepositoryError {
   readonly code = 'REPOSITORY_FOREIGN_KEY_VIOLATION';
 
-  constructor(public readonly fields: string[], cause?: unknown) {
+  constructor(
+    public readonly fields: string[],
+    cause?: unknown,
+  ) {
     super(`Foreign key constraint violated for ${fields.join(', ')}`, {
       cause,
     });

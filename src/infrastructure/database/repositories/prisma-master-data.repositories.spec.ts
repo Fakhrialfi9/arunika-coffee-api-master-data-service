@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { RepositoryForeignKeyError } from '../errors/repository.error.js';
-import { PrismaTransactionService } from '../prisma-transaction.service.js';
-import { PrismaService } from '../prisma.service.js';
+import type { PrismaTransactionService } from '../prisma-transaction.service.js';
+import type { PrismaService } from '../prisma.service.js';
 import { PrismaCertificationRepository } from './prisma-certification.repository.js';
 import { PrismaCoffeeBeanRepository } from './prisma-coffee-bean.repository.js';
 import { PrismaCoffeeGradeRepository } from './prisma-coffee-grade.repository.js';
@@ -85,8 +85,8 @@ describe('Prisma master data repositories', () => {
     const repositories = createRepositories(prisma, transactions);
 
     for (const repository of repositories) {
-      await repository.create({} as never);
-      await repository.update({ id: 'entity-1' }, {} as never);
+      await repository.create({});
+      await repository.update({ id: 'entity-1' }, {});
       await repository.delete({ id: 'entity-1' });
     }
 
