@@ -47,9 +47,7 @@ export class FlavorProfile {
     ).validate();
   }
 
-  static reconstitute(
-    props: ReconstituteFlavorProfileProps,
-  ): FlavorProfile {
+  static reconstitute(props: ReconstituteFlavorProfileProps): FlavorProfile {
     return new FlavorProfile(
       props.uuid,
       props.code,
@@ -135,9 +133,7 @@ export class FlavorProfile {
     field: string,
   ): void {
     if (value !== null && value.length > 191) {
-      throw new Error(
-        `FlavorProfile ${field} must not exceed 191 characters`,
-      );
+      throw new Error(`FlavorProfile ${field} must not exceed 191 characters`);
     }
   }
 }
