@@ -1,7 +1,9 @@
+import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 
 import { PrismaBaseRepository } from './prisma-base.repository.js';
 
+@Injectable()
 export class PrismaCoffeeGradeRepository extends PrismaBaseRepository {
   findById(id: string) {
     return this.execute(() => this.prisma.coffeeGrade.findUnique({ where: { id } }));

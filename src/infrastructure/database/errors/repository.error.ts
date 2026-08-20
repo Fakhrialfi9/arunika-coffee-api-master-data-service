@@ -15,6 +15,16 @@ export class RepositoryUniqueConstraintError extends RepositoryError {
   }
 }
 
+export class RepositoryForeignKeyError extends RepositoryError {
+  readonly code = 'REPOSITORY_FOREIGN_KEY_VIOLATION';
+
+  constructor(public readonly fields: string[], cause?: unknown) {
+    super(`Foreign key constraint violated for ${fields.join(', ')}`, {
+      cause,
+    });
+  }
+}
+
 export class RepositoryNotFoundError extends RepositoryError {
   readonly code = 'REPOSITORY_NOT_FOUND';
 

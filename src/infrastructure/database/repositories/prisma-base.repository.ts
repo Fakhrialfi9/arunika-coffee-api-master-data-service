@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 
 import {
+  RepositoryForeignKeyError,
   RepositoryNotFoundError,
   RepositoryPersistenceError,
   RepositoryUniqueConstraintError,
@@ -38,7 +39,8 @@ export abstract class PrismaBaseRepository {
     if (
       error instanceof RepositoryPersistenceError ||
       error instanceof RepositoryNotFoundError ||
-      error instanceof RepositoryUniqueConstraintError
+      error instanceof RepositoryUniqueConstraintError ||
+      error instanceof RepositoryForeignKeyError
     ) {
       return error;
     }
@@ -48,6 +50,13 @@ export abstract class PrismaBaseRepository {
     if (code === 'P2002') {
       return new RepositoryUniqueConstraintError(
         this.prismaErrorTarget(error),
+        error,
+      );
+    }
+
+    if (code === 'P2003' || code === 'P2014') {
+      return new RepositoryForeignKeyError(
+        this.prismaForeignKeyTarget(error),
         error,
       );
     }
@@ -79,6 +88,22 @@ export abstract class PrismaBaseRepository {
     ) {
       const target = error.meta.target;
       return Array.isArray(target) ? target.map(String) : [String(target)];
+    }
+
+    return ['unknown'];
+  }
+
+  private prismaForeignKeyTarget(error: unknown): string[] {
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'meta' in error &&
+      typeof error.meta === 'object' &&
+      error.meta !== null &&
+      'field_name' in error.meta
+    ) {
+      const field = error.meta.field_name;
+      return Array.isArray(field) ? field.map(String) : [String(field)];
     }
 
     return ['unknown'];
