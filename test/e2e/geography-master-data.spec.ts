@@ -111,7 +111,7 @@ describe('Step 29 geography master data', () => {
         include: { regions: { orderBy: { code: 'asc' } } },
       });
 
-      expect(hierarchy?.regions.map(({ id }) => id)).toEqual(
+      expect(hierarchy?.regions.map(({ id }) => id).sort()).toEqual(
         [regionA.id, regionB.id].sort(),
       );
       expect(
