@@ -14,27 +14,20 @@
     "prisma:status": "prisma migrate status",
     "prisma:studio": "prisma studio",
     "prisma:seed": "prisma db seed",
-
     "fresh": "bash scripts/fresh-install.sh",
     "clean:hard": "bash scripts/hard-clean.sh",
     "clean:soft": "bash scripts/soft-clean.sh",
     "clean": "rm -rf dist node_modules/.cache generated tsconfig.build.tsbuildinfo && npm run clean:soft",
-
     "build": "prisma generate && nest build --path tsconfig.build.json",
-
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/src/main.js",
-
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-
     "typecheck": "prisma generate && tsc --noEmit",
-
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\" --no-error-on-unmatched-pattern",
     "format:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\" --no-error-on-unmatched-pattern",
-
     "test": "prisma generate && vitest run",
     "test:watch": "prisma generate && vitest",
     "test:unit": "prisma generate && vitest run --config vitest.config.ts",
@@ -45,7 +38,6 @@
     "test:coverage:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts --coverage",
     "test:all": "npm run test:unit && npm run test:e2e && npm run test:grpc && npm run test:security",
     "test:steps:26-45": "bash scripts/verify-steps-26-45.sh",
-
     "check:fix": "npm run format && npm run lint:fix",
     "check:health": "npm run lint && npm run typecheck && npm run test && npm run format:check && npm run build",
     "check:fresh": "npm run clean && npm ci && npm run check:health"
@@ -89,6 +81,7 @@
     "eslint-plugin-prettier": "5.5.6",
     "globals": "17.0.0",
     "prettier": "3.9.6",
+    "prisma": "7.9.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.67.0",
     "vitest": "4.1.10"
