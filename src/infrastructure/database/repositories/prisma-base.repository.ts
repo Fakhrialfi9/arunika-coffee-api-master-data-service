@@ -11,7 +11,7 @@ import { PrismaService } from '../prisma.service.js';
 
 @Injectable()
 export abstract class PrismaBaseRepository {
-  protected constructor(
+  constructor(
     protected readonly prisma: PrismaService,
     protected readonly transactions: PrismaTransactionService,
   ) {}
