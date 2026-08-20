@@ -1,3 +1,4 @@
+import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 
 import {
@@ -8,6 +9,7 @@ import {
 import { PrismaTransactionService } from '../prisma-transaction.service.js';
 import { PrismaService } from '../prisma.service.js';
 
+@Injectable()
 export abstract class PrismaBaseRepository {
   protected constructor(
     protected readonly prisma: PrismaService,
