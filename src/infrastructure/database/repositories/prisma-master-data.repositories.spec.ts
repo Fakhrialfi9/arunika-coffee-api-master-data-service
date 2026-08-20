@@ -93,11 +93,12 @@ describe('Prisma master data repositories', () => {
       {},
       { get: () => delegate },
     ) as unknown as PrismaService;
+    const run = vi.fn(
+      async (operation: (transaction: unknown) => Promise<unknown>) =>
+        operation(new Proxy({}, { get: () => delegate })),
+    );
     const transactions = {
-      run: vi.fn(
-        async (operation: (transaction: unknown) => Promise<unknown>) =>
-          operation(new Proxy({}, { get: () => delegate })),
-      ),
+      run,
     } as unknown as PrismaTransactionService;
     const repositories = createRepositories(prisma, transactions);
 
@@ -107,7 +108,7 @@ describe('Prisma master data repositories', () => {
       await repository.delete({ id: 'entity-1' });
     }
 
-    expect(transactions.run).toHaveBeenCalledTimes(repositories.length * 3);
+    expect(run).toHaveBeenCalledTimes(repositories.length * 3);
     expect(delegate.create).toHaveBeenCalledTimes(repositories.length);
     expect(delegate.update).toHaveBeenCalledTimes(repositories.length);
     expect(delegate.delete).toHaveBeenCalledTimes(repositories.length);
