@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
 
 import {
+  RepositoryBusinessRuleError,
   RepositoryForeignKeyError,
   RepositoryNotFoundError,
   RepositoryPersistenceError,
@@ -40,7 +41,8 @@ export abstract class PrismaBaseRepository {
       error instanceof RepositoryPersistenceError ||
       error instanceof RepositoryNotFoundError ||
       error instanceof RepositoryUniqueConstraintError ||
-      error instanceof RepositoryForeignKeyError
+      error instanceof RepositoryForeignKeyError ||
+      error instanceof RepositoryBusinessRuleError
     ) {
       return error;
     }

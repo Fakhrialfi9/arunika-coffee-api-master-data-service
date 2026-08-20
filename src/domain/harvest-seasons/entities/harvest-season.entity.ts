@@ -133,6 +133,16 @@ export class HarvestSeason {
       );
     }
 
+    if (
+      this._startMonth !== null &&
+      this._endMonth !== null &&
+      this._startMonth > this._endMonth
+    ) {
+      throw new Error(
+        'HarvestSeason startMonth must be less than or equal to endMonth',
+      );
+    }
+
     if (this._isCurrent && !this._isActive) {
       throw new Error('HarvestSeason current season must be active');
     }

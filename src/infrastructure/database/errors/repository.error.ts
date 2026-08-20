@@ -39,6 +39,18 @@ export class RepositoryNotFoundError extends RepositoryError {
   }
 }
 
+export class RepositoryBusinessRuleError extends RepositoryError {
+  readonly code = 'REPOSITORY_BUSINESS_RULE_VIOLATION';
+
+  constructor(
+    public readonly rule: string,
+    message: string,
+    cause?: unknown,
+  ) {
+    super(message, { cause });
+  }
+}
+
 export class RepositoryPersistenceError extends RepositoryError {
   readonly code = 'REPOSITORY_PERSISTENCE_FAILURE';
 

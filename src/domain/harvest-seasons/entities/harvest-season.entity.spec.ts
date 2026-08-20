@@ -22,24 +22,24 @@ describe('HarvestSeason entity', () => {
 
   it('preserves year, season period, and current-season attributes', () => {
     const season = HarvestSeason.create({
-      name: '2026/2027 Main Harvest',
-      label: 'Harvest 2026/2027',
+      name: '2026 Main Harvest',
+      label: 'Harvest 2026',
       year: 2026,
       seasonType: 'Main',
-      startMonth: 10,
+      startMonth: 2,
       endMonth: 4,
       isCurrent: true,
-      description: 'Cross-year harvest season',
+      description: 'Main harvest season',
       sortOrder: 2,
     });
 
-    expect(season.label).toBe('Harvest 2026/2027');
+    expect(season.label).toBe('Harvest 2026');
     expect(season.seasonType).toBe('Main');
-    expect(season.startMonth).toBe(10);
+    expect(season.startMonth).toBe(2);
     expect(season.endMonth).toBe(4);
     expect(season.isCurrent).toBe(true);
     expect(season.isActive).toBe(true);
-    expect(season.description).toBe('Cross-year harvest season');
+    expect(season.description).toBe('Main harvest season');
     expect(season.sortOrder).toBe(2);
   });
 
@@ -59,6 +59,15 @@ describe('HarvestSeason entity', () => {
         endMonth: 2,
       }),
     ).toThrow('startMonth must be an integer between 1 and 12');
+
+    expect(() =>
+      HarvestSeason.create({
+        name: 'Reversed Period',
+        year: 2026,
+        startMonth: 10,
+        endMonth: 4,
+      }),
+    ).toThrow('startMonth must be less than or equal to endMonth');
 
     expect(() =>
       HarvestSeason.create({
@@ -91,7 +100,7 @@ describe('HarvestSeason entity', () => {
 
     expect(() =>
       HarvestSeason.create({
-        name: ' '.repeat(1),
+        name: ' ',
         year: 2026,
       }),
     ).toThrow('name must contain between 1 and 191 characters');
