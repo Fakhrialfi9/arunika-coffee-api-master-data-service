@@ -134,7 +134,10 @@ export class Variety {
     Variety.validateRequiredString(this._speciesId, 'speciesId');
     Variety.validateRequiredString(this._code, 'code');
     Variety.validateRequiredString(this._name, 'name');
-    Variety.validateOptionalString(this._geneticBackground, 'geneticBackground');
+    Variety.validateOptionalString(
+      this._geneticBackground,
+      'geneticBackground',
+    );
     Variety.validateOptionalString(this._originCountry, 'originCountry');
     Variety.validateOptionalString(this._description, 'description');
 
