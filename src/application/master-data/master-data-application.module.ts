@@ -8,7 +8,10 @@ import { MasterDataCrudService } from './services/master-data-crud.service.js';
   providers: [
     MasterDataCrudService,
     PrismaMasterDataRepositoryFactory,
-    { provide: MASTER_DATA_REPOSITORY_FACTORY, useExisting: PrismaMasterDataRepositoryFactory },
+    {
+      provide: MASTER_DATA_REPOSITORY_FACTORY,
+      useExisting: PrismaMasterDataRepositoryFactory,
+    },
   ],
   exports: [MasterDataCrudService, MASTER_DATA_REPOSITORY_FACTORY],
 })

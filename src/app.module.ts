@@ -12,7 +12,13 @@ import { MasterDataGrpcController } from './infrastructure/grpc/master-data.grpc
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, cache: true, load: [appConfig], validate: validateEnvironment, envFilePath: ['.env'] }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      cache: true,
+      load: [appConfig],
+      validate: validateEnvironment,
+      envFilePath: ['.env'],
+    }),
     DatabaseModule,
     MasterDataApplicationModule,
   ],
