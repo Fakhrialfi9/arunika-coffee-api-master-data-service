@@ -1,9 +1,29 @@
 import 'dotenv/config';
 
 import { PrismaMariaDb } from '@prisma/adapter-mariadb';
-import { PrismaClient } from './generated/prisma/client.js';
+import { registerHooks } from 'node:module';
+import { URL, fileURLToPath } from 'node:url';
+import { accessSync } from 'node:fs';
 
-import { seedMasterData } from './seeds/index.js';
+registerHooks({
+  resolve(specifier, context, nextResolve) {
+    if (context.parentURL && specifier.endsWith('.js')) {
+      const candidate = new URL(`${specifier.slice(0, -3)}.ts`, context.parentURL);
+
+      try {
+        accessSync(fileURLToPath(candidate));
+        return nextResolve(candidate.href, context);
+      } catch {
+        // Fall through when a real JavaScript module is being imported.
+      }
+    }
+
+    return nextResolve(specifier, context);
+  },
+});
+
+const { PrismaClient } = await import('./generated/prisma/client.js');
+const { seedMasterData } = await import('./seeds/index.js');
 
 const databaseUrl = process.env.DATABASE_URL;
 
