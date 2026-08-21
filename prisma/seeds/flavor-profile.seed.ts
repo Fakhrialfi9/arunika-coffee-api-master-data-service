@@ -1,7 +1,7 @@
 import type { Prisma } from '../generated/prisma/client.js';
 
 export async function seedFlavorProfile(tx: Prisma.TransactionClient) {
-  return tx.flavorProfile.upsert({
+  return tx.flavorProfiles.upsert({
     where: { code: 'CHOCOLATE' },
     update: { name: 'Chocolate', isActive: true, sortOrder: 1 },
     create: {
