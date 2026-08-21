@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
+import { MasterDataApplicationModule } from './application/master-data/master-data-application.module.js';
 import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { appConfig } from './config/app.config.js';
@@ -11,14 +12,9 @@ import { MasterDataGrpcController } from './infrastructure/grpc/master-data.grpc
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-      cache: true,
-      load: [appConfig],
-      validate: validateEnvironment,
-      envFilePath: ['.env'],
-    }),
+    ConfigModule.forRoot({ isGlobal: true, cache: true, load: [appConfig], validate: validateEnvironment, envFilePath: ['.env'] }),
     DatabaseModule,
+    MasterDataApplicationModule,
   ],
   controllers: [AppController, MasterDataGrpcController],
   providers: [AppService, GrpcHealthService],
