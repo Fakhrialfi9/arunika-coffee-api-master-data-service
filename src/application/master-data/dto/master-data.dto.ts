@@ -7,14 +7,17 @@ import type {
 export interface CreateMasterDataDto extends MasterDataWrite {
   entity?: MasterDataEntityName;
 }
+
 export interface UpdateMasterDataDto extends MasterDataWrite {
   entity?: MasterDataEntityName;
 }
+
 export interface GetMasterDataDto {
   id?: string;
   uuid?: string;
 }
-export interface ListMasterDataDto extends MasterDataListQuery {}
+
+export type ListMasterDataDto = MasterDataListQuery;
 
 export function assertMasterDataWrite(
   value: unknown,
