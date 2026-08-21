@@ -1,0 +1,44 @@
+name: Steps 51-55 Validation
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Prepare test database
+        run: |
+          mysql -h 127.0.0.1 -uroot -proot -e "CREATE DATABASE IF NOT EXISTS arunika_coffee_master_data; CREATE USER IF NOT EXISTS 'dev'@'%' IDENTIFIED BY 'dev123'; GRANT ALL PRIVILEGES ON arunika_coffee_master_data.* TO 'dev'@'%'; FLUSH PRIVILEGES;"
+      - run: npm ci
+      - name: Apply existing migrations
+        env:
+          DATABASE_URL: mysql://dev:dev123@127.0.0.1:3306/arunika_coffee_master_data
+        run: npm run prisma:deploy
+      - name: Run Steps 51-55 gate
+        env:
+          DATABASE_HOST: 127.0.0.1
+          DATABASE_PORT: 3306
+          DATABASE_NAME: arunika_coffee_master_data
+          DATABASE_USER: dev
+          DATABASE_PASSWORD: dev123
+          DATABASE_URL: mysql://dev:dev123@127.0.0.1:3306/arunika_coffee_master_data
+        run: npm run test:steps:51-55
