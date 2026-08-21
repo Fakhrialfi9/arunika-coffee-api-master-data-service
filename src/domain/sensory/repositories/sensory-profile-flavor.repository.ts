@@ -1,4 +1,4 @@
-import type { MasterDataRecord } from '../shared/repositories/master-data.repository.js';
+import type { MasterDataRecord } from '../../shared/repositories/master-data.repository.js';
 
 export interface SensoryProfileFlavorMapping {
   flavorProfileId: string;
