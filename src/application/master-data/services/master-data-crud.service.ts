@@ -103,7 +103,13 @@ export class MasterDataCrudService {
           throw new MasterDataValidationError(`${entity}.${field} is required`);
         return null;
       }
-      const record = await this.factory.get(target).findById(String(id));
+      const normalizedId = this.toIdentifier(id);
+      if (!normalizedId) {
+        throw new MasterDataValidationError(
+          `${entity}.${field} must be a valid identifier`,
+        );
+      }
+      const record = await this.factory.get(target).findById(normalizedId);
       if (!record)
         throw new MasterDataValidationError(
           `${entity}.${field} references a missing ${target}`,
@@ -135,7 +141,9 @@ export class MasterDataCrudService {
       await exists('farmer', data.farmerId, 'farmerId', true);
     if (entity === 'variety')
       await exists('species', data.speciesId, 'speciesId', true);
+
     if (entity === 'coffeeBean') {
+      // Species/Variety consistency: a bean's variety must belong to its species.
       const region = await exists('region', data.regionId, 'regionId', true);
       const species = await exists(
         'species',
@@ -156,14 +164,22 @@ export class MasterDataCrudService {
       await exists('harvestSeason', data.harvestSeasonId, 'harvestSeasonId');
 
       if (data.varietyId) {
+        const varietyId = this.toIdentifier(data.varietyId);
+        if (!varietyId)
+          throw new MasterDataValidationError(
+            'CoffeeBean varietyId must be a valid identifier',
+          );
         const variety = await this.factory
           .get('variety')
-          .findById(String(data.varietyId));
+          .findById(varietyId);
         if (variety && String(variety.speciesId) !== String(species?.id))
           throw new MasterDataValidationError(
             'CoffeeBean varietyId must belong to the selected speciesId',
           );
       }
+
+      // Farmer/Farm consistency: a bean's farm must belong to its farmer,
+      // and the farmer must belong to the selected region.
       if (farm && farmer && String(farm.farmerId) !== String(farmer.id))
         throw new MasterDataValidationError(
           'CoffeeBean farmId must belong to farmerId',
@@ -173,5 +189,11 @@ export class MasterDataCrudService {
           'CoffeeBean farmerId must belong to regionId',
         );
     }
+  }
+
+  private toIdentifier(value: unknown): string | null {
+    if (typeof value === 'string' && value.trim()) return value;
+    if (typeof value === 'number' && Number.isFinite(value)) return String(value);
+    return null;
   }
 }
