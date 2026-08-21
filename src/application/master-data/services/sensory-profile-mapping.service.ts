@@ -64,7 +64,7 @@ export class SensoryProfileMappingService {
       sensoryProfileId,
       normalized,
     );
-    return result as MasterDataRecord[];
+    return result;
   }
 
   async removeMapping(
@@ -87,6 +87,6 @@ export class SensoryProfileMappingService {
       sensoryProfileId.trim(),
       flavorProfileId.trim(),
     );
-    return result as MasterDataRecord;
+    return result;
   }
 }
