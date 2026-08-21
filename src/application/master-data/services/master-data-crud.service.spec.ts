@@ -19,6 +19,9 @@ function repository(
         (Object.values(seed).find((row) => row.uuid === uuid) as never) ?? null,
       );
     },
+    findMany() {
+      return Promise.resolve(Object.values(seed) as never);
+    },
     list() {
       return Promise.resolve({
         items: Object.values(seed) as never,
