@@ -79,10 +79,7 @@ export class MasterDataCrudService {
         'limit must be an integer between 1 and 100',
       );
     }
-    if (
-      offset !== undefined &&
-      (!Number.isInteger(offset) || offset < 0)
-    ) {
+    if (offset !== undefined && (!Number.isInteger(offset) || offset < 0)) {
       throw new MasterDataValidationError(
         'offset must be a non-negative integer',
       );
