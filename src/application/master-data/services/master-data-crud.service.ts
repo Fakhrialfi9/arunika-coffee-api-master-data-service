@@ -27,9 +27,12 @@ export class MasterDataCrudService {
   }
 
   async update(entity: MasterDataEntityName, identifier: { id?: string; uuid?: string }, input: MasterDataWrite) {
-    await this.get(entity, identifier);
+    const current = await this.get(entity, identifier);
     const data = this.normalizeWrite(input, false);
-    await this.validateRelations(entity, data, identifier);
+    const merged = { ...current, ...data };
+    delete merged.createdAt;
+    delete merged.updatedAt;
+    await this.validateRelations(entity, merged);
     return this.factory.get(entity).update(identifier, data);
   }
 
@@ -47,7 +50,7 @@ export class MasterDataCrudService {
     return data;
   }
 
-  private async validateRelations(entity: MasterDataEntityName, data: MasterDataWrite, identifier?: { id?: string; uuid?: string }): Promise<void> {
+  private async validateRelations(entity: MasterDataEntityName, data: MasterDataWrite): Promise<void> {
     const exists = async (target: MasterDataEntityName, id: unknown, field: string, required = false) => {
       if (id === undefined || id === null || id === '') { if (required) throw new MasterDataValidationError(`${entity}.${field} is required`); return null; }
       const record = await this.factory.get(target).findById(String(id));
@@ -58,18 +61,18 @@ export class MasterDataCrudService {
     if (entity === 'region') await exists('country', data.countryId, 'countryId', true);
     if (entity === 'organization') await exists('region', data.regionId, 'regionId', true);
     if (entity === 'farmer') {
-      await exists('region', data.regionId, 'regionId', true);
-      await exists('organization', data.organizationId, 'organizationId');
+      const region = await exists('region', data.regionId, 'regionId', true);
+      const organization = await exists('organization', data.organizationId, 'organizationId');
+      if (organization && region && String(organization.regionId) !== String(region.id)) throw new MasterDataValidationError('Farmer organizationId must belong to regionId');
     }
     if (entity === 'farm') await exists('farmer', data.farmerId, 'farmerId', true);
     if (entity === 'variety') await exists('species', data.speciesId, 'speciesId', true);
     if (entity === 'coffeeBean') {
-      await exists('region', data.regionId, 'regionId', true);
-      await exists('species', data.speciesId, 'speciesId', true);
+      const region = await exists('region', data.regionId, 'regionId', true);
+      const species = await exists('species', data.speciesId, 'speciesId', true);
       await exists('processingMethod', data.processingMethodId, 'processingMethodId', true);
       const farmer = await exists('farmer', data.farmerId, 'farmerId');
       const farm = await exists('farm', data.farmId, 'farmId');
-      const species = await exists('species', data.speciesId, 'speciesId', true);
       await exists('variety', data.varietyId, 'varietyId');
       await exists('coffeeGrade', data.gradeId, 'gradeId');
       await exists('harvestSeason', data.harvestSeasonId, 'harvestSeasonId');
@@ -79,11 +82,7 @@ export class MasterDataCrudService {
         if (variety && String(variety.speciesId) !== String(species?.id)) throw new MasterDataValidationError('CoffeeBean varietyId must belong to the selected speciesId');
       }
       if (farm && farmer && String(farm.farmerId) !== String(farmer.id)) throw new MasterDataValidationError('CoffeeBean farmId must belong to farmerId');
-      if (farmer) {
-        const region = await this.factory.get('region').findById(String(data.regionId));
-        if (region && String(farmer.regionId) !== String(region.id)) throw new MasterDataValidationError('CoffeeBean farmerId must belong to regionId');
-      }
+      if (farmer && region && String(farmer.regionId) !== String(region.id)) throw new MasterDataValidationError('CoffeeBean farmerId must belong to regionId');
     }
-    void identifier;
   }
 }

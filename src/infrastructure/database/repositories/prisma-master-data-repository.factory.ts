@@ -14,29 +14,17 @@ import { PrismaRegionRepository } from './prisma-region.repository.js';
 import { PrismaSpeciesRepository } from './prisma-species.repository.js';
 import { PrismaVarietyRepository } from './prisma-variety.repository.js';
 
-interface PrismaRepositoryLike {
-  findById(id: string): Promise<unknown>;
-  findByUuid(uuid: string): Promise<unknown>;
-  findMany(args?: never): Promise<unknown[]>;
-  count(args?: never): Promise<number>;
-  create(data: never): Promise<unknown>;
-  update(where: never, data: never): Promise<unknown>;
-  delete(where: never): Promise<unknown>;
-}
+interface PrismaRepositoryLike { findById(id: string): Promise<unknown>; findByUuid(uuid: string): Promise<unknown>; findMany(args?: never): Promise<unknown[]>; count(args?: never): Promise<number>; create(data: never): Promise<unknown>; update(where: never, data: never): Promise<unknown>; delete(where: never): Promise<unknown>; }
 
 class PrismaRepositoryAdapter implements MasterDataRepository {
   constructor(private readonly repository: PrismaRepositoryLike) {}
   async findById(id: string) { return this.record(await this.repository.findById(id)); }
   async findByUuid(uuid: string) { return this.record(await this.repository.findByUuid(uuid)); }
   async list(query: MasterDataListQuery): Promise<MasterDataListResult> {
-    const page = Math.max(1, query.page ?? 1);
-    const limit = Math.min(100, Math.max(1, query.limit ?? 25));
+    const page = Math.max(1, query.page ?? 1); const limit = Math.min(100, Math.max(1, query.limit ?? 25));
     const where: Record<string, unknown> = {};
     if (query.isActive !== undefined) where.isActive = query.isActive;
-    if (query.search?.trim()) {
-      const value = query.search.trim();
-      where.OR = [{ code: { contains: value } }, { name: { contains: value } }];
-    }
+    if (query.search?.trim()) where.name = { contains: query.search.trim() };
     const sortBy = query.sortBy ?? 'sortOrder';
     if (!['id', 'uuid', 'code', 'name', 'sortOrder', 'createdAt', 'updatedAt', 'year'].includes(sortBy)) throw new Error(`Unsupported master-data sort field: ${sortBy}`);
     const args = { where, skip: (page - 1) * limit, take: limit, orderBy: { [sortBy]: query.sortOrder ?? 'asc' } };
@@ -54,24 +42,8 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
 @Injectable()
 export class PrismaMasterDataRepositoryFactory implements MasterDataRepositoryFactory {
   private readonly adapters: Record<MasterDataEntityName, MasterDataRepository>;
-  constructor(
-    certification: PrismaCertificationRepository,
-    coffeeBean: PrismaCoffeeBeanRepository,
-    coffeeGrade: PrismaCoffeeGradeRepository,
-    country: PrismaCountryRepository,
-    farm: PrismaFarmRepository,
-    farmer: PrismaFarmerRepository,
-    flavorProfile: PrismaFlavorProfileRepository,
-    harvestSeason: PrismaHarvestSeasonRepository,
-    organization: PrismaOrganizationRepository,
-    processingMethod: PrismaProcessingMethodRepository,
-    region: PrismaRegionRepository,
-    species: PrismaSpeciesRepository,
-    variety: PrismaVarietyRepository,
-  ) {
-    this.adapters = {
-      certification: new PrismaRepositoryAdapter(certification), coffeeBean: new PrismaRepositoryAdapter(coffeeBean), coffeeGrade: new PrismaRepositoryAdapter(coffeeGrade), country: new PrismaRepositoryAdapter(country), farm: new PrismaRepositoryAdapter(farm), farmer: new PrismaRepositoryAdapter(farmer), flavorProfile: new PrismaRepositoryAdapter(flavorProfile), harvestSeason: new PrismaRepositoryAdapter(harvestSeason), organization: new PrismaRepositoryAdapter(organization), processingMethod: new PrismaRepositoryAdapter(processingMethod), region: new PrismaRepositoryAdapter(region), species: new PrismaRepositoryAdapter(species), variety: new PrismaRepositoryAdapter(variety),
-    };
+  constructor(certification: PrismaCertificationRepository, coffeeBean: PrismaCoffeeBeanRepository, coffeeGrade: PrismaCoffeeGradeRepository, country: PrismaCountryRepository, farm: PrismaFarmRepository, farmer: PrismaFarmerRepository, flavorProfile: PrismaFlavorProfileRepository, harvestSeason: PrismaHarvestSeasonRepository, organization: PrismaOrganizationRepository, processingMethod: PrismaProcessingMethodRepository, region: PrismaRegionRepository, species: PrismaSpeciesRepository, variety: PrismaVarietyRepository) {
+    this.adapters = { certification: new PrismaRepositoryAdapter(certification), coffeeBean: new PrismaRepositoryAdapter(coffeeBean), coffeeGrade: new PrismaRepositoryAdapter(coffeeGrade), country: new PrismaRepositoryAdapter(country), farm: new PrismaRepositoryAdapter(farm), farmer: new PrismaRepositoryAdapter(farmer), flavorProfile: new PrismaRepositoryAdapter(flavorProfile), harvestSeason: new PrismaRepositoryAdapter(harvestSeason), organization: new PrismaRepositoryAdapter(organization), processingMethod: new PrismaRepositoryAdapter(processingMethod), region: new PrismaRepositoryAdapter(region), species: new PrismaRepositoryAdapter(species), variety: new PrismaRepositoryAdapter(variety) };
   }
   get(entity: MasterDataEntityName): MasterDataRepository { return this.adapters[entity]; }
 }
