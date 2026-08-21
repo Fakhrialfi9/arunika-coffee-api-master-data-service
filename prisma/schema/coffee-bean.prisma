@@ -111,6 +111,9 @@ model CoffeeBean {
   @@index([farmerId])
   @@index([farmId])
   @@index([speciesId])
+  @@index([varietyId])
+  @@index([processingMethodId])
+  @@index([gradeId])
   @@index([harvestSeasonId])
   @@map("coffee_beans")
 }
