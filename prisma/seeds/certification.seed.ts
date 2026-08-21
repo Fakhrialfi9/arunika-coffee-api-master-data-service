@@ -1,7 +1,7 @@
 import type { Prisma } from '../generated/prisma/client.js';
 
 export async function seedCertification(tx: Prisma.TransactionClient) {
-  return tx.certification.upsert({
+  return tx.certifications.upsert({
     where: { code: 'ORGANIC' },
     update: { name: 'Organic', isActive: true, sortOrder: 1 },
     create: {
