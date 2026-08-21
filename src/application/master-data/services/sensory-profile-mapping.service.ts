@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { MasterDataRepositoryFactory } from '../../../domain/shared/repositories/master-data.repository.js';
+import type { MasterDataRecord, MasterDataRepositoryFactory } from '../../../domain/shared/repositories/master-data.repository.js';
 import { MASTER_DATA_REPOSITORY_FACTORY } from '../../../domain/shared/repositories/master-data.repository.js';
 import {
   SENSORY_PROFILE_FLAVOR_REPOSITORY,
@@ -20,7 +20,7 @@ export class SensoryProfileMappingService {
   async replaceMappings(
     sensoryProfileId: string,
     input: SensoryProfileFlavorMapping[],
-  ) {
+  ): Promise<MasterDataRecord[]> {
     const profile = await this.factory
       .get('sensoryProfile')
       .findById(sensoryProfileId);
@@ -57,10 +57,17 @@ export class SensoryProfileMappingService {
         );
     }
 
-    return this.mappings.replaceForProfile(sensoryProfileId, normalized);
+    const result = await this.mappings.replaceForProfile(
+      sensoryProfileId,
+      normalized,
+    );
+    return result as MasterDataRecord[];
   }
 
-  async removeMapping(sensoryProfileId: string, flavorProfileId: string) {
+  async removeMapping(
+    sensoryProfileId: string,
+    flavorProfileId: string,
+  ): Promise<MasterDataRecord> {
     if (!sensoryProfileId?.trim() || !flavorProfileId?.trim()) {
       throw new MasterDataValidationError(
         'sensoryProfileId and flavorProfileId are required',
@@ -73,9 +80,10 @@ export class SensoryProfileMappingService {
       throw new MasterDataValidationError(
         'sensoryProfileId references a missing sensoryProfile',
       );
-    return this.mappings.removeMapping(
+    const result = await this.mappings.removeMapping(
       sensoryProfileId.trim(),
       flavorProfileId.trim(),
     );
+    return result as MasterDataRecord;
   }
 }
