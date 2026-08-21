@@ -169,9 +169,7 @@ export class MasterDataCrudService {
           throw new MasterDataValidationError(
             'CoffeeBean varietyId must be a valid identifier',
           );
-        const variety = await this.factory
-          .get('variety')
-          .findById(varietyId);
+        const variety = await this.factory.get('variety').findById(varietyId);
         if (variety && String(variety.speciesId) !== String(species?.id))
           throw new MasterDataValidationError(
             'CoffeeBean varietyId must belong to the selected speciesId',
