@@ -6,8 +6,16 @@ export interface SensoryProfileFlavorMapping {
 }
 
 export interface SensoryProfileFlavorRepository {
-  replaceForProfile(sensoryProfileId: string, mappings: SensoryProfileFlavorMapping[]): Promise<MasterDataRecord[]>;
-  removeMapping(sensoryProfileId: string, flavorProfileId: string): Promise<MasterDataRecord>;
+  replaceForProfile(
+    sensoryProfileId: string,
+    mappings: SensoryProfileFlavorMapping[],
+  ): Promise<MasterDataRecord[]>;
+  removeMapping(
+    sensoryProfileId: string,
+    flavorProfileId: string,
+  ): Promise<MasterDataRecord>;
 }
 
-export const SENSORY_PROFILE_FLAVOR_REPOSITORY = Symbol('SENSORY_PROFILE_FLAVOR_REPOSITORY');
+export const SENSORY_PROFILE_FLAVOR_REPOSITORY = Symbol(
+  'SENSORY_PROFILE_FLAVOR_REPOSITORY',
+);

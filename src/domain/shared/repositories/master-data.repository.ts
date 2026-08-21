@@ -41,7 +41,9 @@ export interface MasterDataQueryArgs {
   take?: number;
 }
 
-export interface MasterDataListResult<T extends MasterDataRecord = MasterDataRecord> {
+export interface MasterDataListResult<
+  T extends MasterDataRecord = MasterDataRecord,
+> {
   items: T[];
   page: number;
   limit: number;
@@ -49,17 +51,24 @@ export interface MasterDataListResult<T extends MasterDataRecord = MasterDataRec
   totalPages: number;
 }
 
-export interface MasterDataRepository<T extends MasterDataRecord = MasterDataRecord> {
+export interface MasterDataRepository<
+  T extends MasterDataRecord = MasterDataRecord,
+> {
   findById(id: string): Promise<T | null>;
   findByUuid(uuid: string): Promise<T | null>;
   findMany(args?: MasterDataQueryArgs): Promise<T[]>;
   list(query: MasterDataListQuery): Promise<MasterDataListResult<T>>;
   create(data: MasterDataWrite): Promise<T>;
-  update(identifier: { id?: string; uuid?: string }, data: MasterDataWrite): Promise<T>;
+  update(
+    identifier: { id?: string; uuid?: string },
+    data: MasterDataWrite,
+  ): Promise<T>;
   delete(identifier: { id?: string; uuid?: string }): Promise<T>;
 }
 
-export const MASTER_DATA_REPOSITORY_FACTORY = Symbol('MASTER_DATA_REPOSITORY_FACTORY');
+export const MASTER_DATA_REPOSITORY_FACTORY = Symbol(
+  'MASTER_DATA_REPOSITORY_FACTORY',
+);
 
 export interface MasterDataRepositoryFactory {
   get(entity: MasterDataEntityName): MasterDataRepository;

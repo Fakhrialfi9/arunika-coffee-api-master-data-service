@@ -48,20 +48,36 @@ const SEARCH_FIELDS: Record<MasterDataEntityName, string[]> = {
   harvestSeason: ['name', 'label', 'seasonType'],
   certification: ['name', 'code', 'type', 'issuer'],
   flavorProfile: ['name', 'code', 'category'],
-  sensoryProfile: ['aroma', 'body', 'acidity', 'sweetness', 'aftertaste', 'description'],
+  sensoryProfile: [
+    'aroma',
+    'body',
+    'acidity',
+    'sweetness',
+    'aftertaste',
+    'description',
+  ],
   sensoryProfileFlavor: [],
   coffeeBean: ['name', 'code', 'lotNumber', 'qualityStatus', 'beanSize'],
 };
 
 class PrismaRepositoryAdapter implements MasterDataRepository {
-  constructor(private readonly entity: MasterDataEntityName, private readonly repository: PrismaRepositoryLike) {}
+  constructor(
+    private readonly entity: MasterDataEntityName,
+    private readonly repository: PrismaRepositoryLike,
+  ) {}
 
-  async findById(id: string) { return this.record(await this.repository.findById(id)); }
-  async findByUuid(uuid: string) { return this.record(await this.repository.findByUuid(uuid)); }
+  async findById(id: string) {
+    return this.record(await this.repository.findById(id));
+  }
+  async findByUuid(uuid: string) {
+    return this.record(await this.repository.findByUuid(uuid));
+  }
 
   async findMany(args: MasterDataQueryArgs = {}) {
     const rows = await this.repository.findMany(args as never);
-    return rows.map((row) => this.record(row)).filter((row): row is MasterDataRecord => row !== null);
+    return rows
+      .map((row) => this.record(row))
+      .filter((row): row is MasterDataRecord => row !== null);
   }
 
   async list(query: MasterDataListQuery): Promise<MasterDataListResult> {
@@ -80,16 +96,38 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
       this.repository.findMany(args as never),
       this.repository.count({ where } as never),
     ]);
-    const items = rows.map((row) => this.record(row)).filter((row): row is MasterDataRecord => row !== null);
-    return { items, page, limit, total, totalPages: total === 0 ? 0 : Math.ceil(total / limit) };
+    const items = rows
+      .map((row) => this.record(row))
+      .filter((row): row is MasterDataRecord => row !== null);
+    return {
+      items,
+      page,
+      limit,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit),
+    };
   }
 
-  async create(data: MasterDataWrite) { return this.record(await this.repository.create(data as never)) as MasterDataRecord; }
-  async update(identifier: { id?: string; uuid?: string }, data: MasterDataWrite) {
-    return this.record(await this.repository.update(this.where(identifier) as never, data as never)) as MasterDataRecord;
+  async create(data: MasterDataWrite) {
+    return this.record(
+      await this.repository.create(data as never),
+    ) as MasterDataRecord;
+  }
+  async update(
+    identifier: { id?: string; uuid?: string },
+    data: MasterDataWrite,
+  ) {
+    return this.record(
+      await this.repository.update(
+        this.where(identifier) as never,
+        data as never,
+      ),
+    ) as MasterDataRecord;
   }
   async delete(identifier: { id?: string; uuid?: string }) {
-    return this.record(await this.repository.delete(this.where(identifier) as never)) as MasterDataRecord;
+    return this.record(
+      await this.repository.delete(this.where(identifier) as never),
+    ) as MasterDataRecord;
   }
 
   private buildWhere(query: MasterDataListQuery): Record<string, unknown> {
@@ -100,7 +138,8 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
     }
     const search = query.search?.trim();
     const fields = SEARCH_FIELDS[this.entity];
-    if (search && fields.length > 0) where.OR = fields.map((field) => ({ [field]: { contains: search } }));
+    if (search && fields.length > 0)
+      where.OR = fields.map((field) => ({ [field]: { contains: search } }));
     return where;
   }
 
@@ -113,7 +152,8 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
   private record(value: unknown): MasterDataRecord | null {
     if (value === null || typeof value !== 'object') return null;
     const record = value as Record<string, unknown>;
-    if (typeof record.id !== 'string' || typeof record.uuid !== 'string') throw new Error('Persistence record must expose id and uuid');
+    if (typeof record.id !== 'string' || typeof record.uuid !== 'string')
+      throw new Error('Persistence record must expose id and uuid');
     return record as MasterDataRecord;
   }
 }
@@ -140,23 +180,43 @@ export class PrismaMasterDataRepositoryFactory implements MasterDataRepositoryFa
     variety: PrismaVarietyRepository,
   ) {
     this.adapters = {
-      certification: new PrismaRepositoryAdapter('certification', certification),
+      certification: new PrismaRepositoryAdapter(
+        'certification',
+        certification,
+      ),
       coffeeBean: new PrismaRepositoryAdapter('coffeeBean', coffeeBean),
       coffeeGrade: new PrismaRepositoryAdapter('coffeeGrade', coffeeGrade),
       country: new PrismaRepositoryAdapter('country', country),
       farm: new PrismaRepositoryAdapter('farm', farm),
       farmer: new PrismaRepositoryAdapter('farmer', farmer),
-      flavorProfile: new PrismaRepositoryAdapter('flavorProfile', flavorProfile),
-      harvestSeason: new PrismaRepositoryAdapter('harvestSeason', harvestSeason),
+      flavorProfile: new PrismaRepositoryAdapter(
+        'flavorProfile',
+        flavorProfile,
+      ),
+      harvestSeason: new PrismaRepositoryAdapter(
+        'harvestSeason',
+        harvestSeason,
+      ),
       organization: new PrismaRepositoryAdapter('organization', organization),
-      processingMethod: new PrismaRepositoryAdapter('processingMethod', processingMethod),
+      processingMethod: new PrismaRepositoryAdapter(
+        'processingMethod',
+        processingMethod,
+      ),
       region: new PrismaRepositoryAdapter('region', region),
-      sensoryProfile: new PrismaRepositoryAdapter('sensoryProfile', sensoryProfile),
-      sensoryProfileFlavor: new PrismaRepositoryAdapter('sensoryProfileFlavor', sensoryProfileFlavor),
+      sensoryProfile: new PrismaRepositoryAdapter(
+        'sensoryProfile',
+        sensoryProfile,
+      ),
+      sensoryProfileFlavor: new PrismaRepositoryAdapter(
+        'sensoryProfileFlavor',
+        sensoryProfileFlavor,
+      ),
       species: new PrismaRepositoryAdapter('species', species),
       variety: new PrismaRepositoryAdapter('variety', variety),
     };
   }
 
-  get(entity: MasterDataEntityName): MasterDataRepository { return this.adapters[entity]; }
+  get(entity: MasterDataEntityName): MasterDataRepository {
+    return this.adapters[entity];
+  }
 }

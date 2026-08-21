@@ -6,15 +6,21 @@ import { PrismaBaseRepository } from './prisma-base.repository.js';
 @Injectable()
 export class PrismaSensoryProfileRepository extends PrismaBaseRepository {
   findById(id: string) {
-    return this.execute(() => this.prisma.sensoryProfile.findUnique({ where: { id } }));
+    return this.execute(() =>
+      this.prisma.sensoryProfile.findUnique({ where: { id } }),
+    );
   }
 
   findByUuid(uuid: string) {
-    return this.execute(() => this.prisma.sensoryProfile.findUnique({ where: { uuid } }));
+    return this.execute(() =>
+      this.prisma.sensoryProfile.findUnique({ where: { uuid } }),
+    );
   }
 
   findByCoffeeBeanId(coffeeBeanId: string) {
-    return this.execute(() => this.prisma.sensoryProfile.findUnique({ where: { coffeeBeanId } }));
+    return this.execute(() =>
+      this.prisma.sensoryProfile.findUnique({ where: { coffeeBeanId } }),
+    );
   }
 
   findMany(args?: Prisma.SensoryProfileFindManyArgs) {
@@ -26,14 +32,23 @@ export class PrismaSensoryProfileRepository extends PrismaBaseRepository {
   }
 
   create(data: Prisma.SensoryProfileCreateInput) {
-    return this.executeTransaction((transaction) => transaction.sensoryProfile.create({ data }));
+    return this.executeTransaction((transaction) =>
+      transaction.sensoryProfile.create({ data }),
+    );
   }
 
-  update(where: Prisma.SensoryProfileWhereUniqueInput, data: Prisma.SensoryProfileUpdateInput) {
-    return this.executeTransaction((transaction) => transaction.sensoryProfile.update({ where, data }));
+  update(
+    where: Prisma.SensoryProfileWhereUniqueInput,
+    data: Prisma.SensoryProfileUpdateInput,
+  ) {
+    return this.executeTransaction((transaction) =>
+      transaction.sensoryProfile.update({ where, data }),
+    );
   }
 
   delete(where: Prisma.SensoryProfileWhereUniqueInput) {
-    return this.executeTransaction((transaction) => transaction.sensoryProfile.delete({ where }));
+    return this.executeTransaction((transaction) =>
+      transaction.sensoryProfile.delete({ where }),
+    );
   }
 }
