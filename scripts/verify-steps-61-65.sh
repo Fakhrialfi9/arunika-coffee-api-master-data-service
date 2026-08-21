@@ -13,9 +13,9 @@ FAILED=0
 log() { printf '%s\n' "$*" | tee -a "$REPORT_FILE"; }
 pass() { TOTAL=$((TOTAL + 1)); PASSED=$((PASSED + 1)); log "PASS  $*"; }
 fail() { TOTAL=$((TOTAL + 1)); FAILED=$((FAILED + 1)); log "FAIL  $*"; }
-run() { local label="$1"; shift; if "$@" >>"$REPORT_FILE" 2>&1; then pass "$label"; else fail "$label"; fi; }
+run() { local label="$1"; shift; if "$@" >>"$REPORT_FILE" 2>&1; then pass "$label"; else fail "$label"; fi }
 has() { [[ -e "$1" ]]; }
-contains() { grep -R -q -- "$2" "$1"; }
+contains() { grep -R -F -q -- "$2" "$1"; }
 section() { log ""; log "============================================================"; log "$1"; log "============================================================"; }
 
 log "Arunika Coffee Master Data Service — Step 61-65 Verification"
