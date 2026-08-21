@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { MasterDataRecord, MasterDataRepositoryFactory } from '../../../domain/shared/repositories/master-data.repository.js';
+import type {
+  MasterDataRecord,
+  MasterDataRepositoryFactory,
+} from '../../../domain/shared/repositories/master-data.repository.js';
 import { MASTER_DATA_REPOSITORY_FACTORY } from '../../../domain/shared/repositories/master-data.repository.js';
 import {
   SENSORY_PROFILE_FLAVOR_REPOSITORY,
