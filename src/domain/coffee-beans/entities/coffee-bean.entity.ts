@@ -1,5 +1,11 @@
 import { randomUUID } from 'node:crypto';
 
+type JsonPrimitive = string | number | boolean | null;
+interface JsonObject {
+  [key: string]: JsonValue;
+}
+type JsonValue = JsonPrimitive | JsonObject | JsonValue[];
+
 export interface CoffeeBeanProps {
   uuid?: string;
   code: string;
@@ -19,8 +25,8 @@ export interface CoffeeBeanProps {
   density?: number | null;
   beanSize?: string | null;
   qualityStatus?: string | null;
-  flavorProfiles?: unknown | null;
-  aromaNotes?: unknown | null;
+  flavorProfiles?: JsonValue;
+  aromaNotes?: JsonValue;
   availableWeight?: number | null;
   reservedWeight?: number | null;
   weightUnit?: string;
@@ -39,6 +45,7 @@ export type ReconstituteCoffeeBeanProps = CoffeeBeanProps & {
 
 export class CoffeeBean {
   private constructor(private readonly props: ReconstituteCoffeeBeanProps) {}
+
   static create(props: CoffeeBeanProps): CoffeeBean {
     const now = new Date();
     return new CoffeeBean({
@@ -52,33 +59,43 @@ export class CoffeeBean {
       sortOrder: props.sortOrder ?? 0,
     }).validate();
   }
+
   static reconstitute(props: ReconstituteCoffeeBeanProps): CoffeeBean {
     return new CoffeeBean(props).validate();
   }
+
   get uuid(): string {
     return this.props.uuid;
   }
+
   get code(): string {
     return this.props.code;
   }
+
   get regionId(): string {
     return this.props.regionId;
   }
+
   get speciesId(): string {
     return this.props.speciesId;
   }
+
   get processingMethodId(): string {
     return this.props.processingMethodId;
   }
+
   get varietyId(): string | null {
     return this.props.varietyId ?? null;
   }
+
   get farmerId(): string | null {
     return this.props.farmerId ?? null;
   }
+
   get farmId(): string | null {
     return this.props.farmId ?? null;
   }
+
   toPrimitives(): ReconstituteCoffeeBeanProps {
     return {
       ...this.props,
@@ -86,6 +103,7 @@ export class CoffeeBean {
       updatedAt: new Date(this.props.updatedAt),
     };
   }
+
   private validate(): CoffeeBean {
     for (const [field, value] of [
       ['code', this.props.code],
