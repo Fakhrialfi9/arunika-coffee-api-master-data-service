@@ -34,12 +34,15 @@ interface PrismaRepositoryLike {
 
 class PrismaRepositoryAdapter implements MasterDataRepository {
   constructor(private readonly repository: PrismaRepositoryLike) {}
+
   async findById(id: string) {
     return this.record(await this.repository.findById(id));
   }
+
   async findByUuid(uuid: string) {
     return this.record(await this.repository.findByUuid(uuid));
   }
+
   async list(query: MasterDataListQuery): Promise<MasterDataListResult> {
     const page = Math.max(1, query.page ?? 1);
     const limit = Math.min(100, Math.max(1, query.limit ?? 25));
@@ -81,29 +84,34 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
       totalPages: total === 0 ? 0 : Math.ceil(total / limit),
     };
   }
+
   async create(data: MasterDataWrite) {
     return this.record(
       await this.repository.create(data as never),
     ) as MasterDataRecord;
   }
+
   async update(
     identifier: { id?: string; uuid?: string },
     data: MasterDataWrite,
   ) {
     return this.record(
-      await this.repository.update(this.where(identifier), data as never),
+      await this.repository.update(this.where(identifier) as never, data as never),
     ) as MasterDataRecord;
   }
+
   async delete(identifier: { id?: string; uuid?: string }) {
     return this.record(
-      await this.repository.delete(this.where(identifier)),
+      await this.repository.delete(this.where(identifier) as never),
     ) as MasterDataRecord;
   }
+
   private where(identifier: { id?: string; uuid?: string }) {
     if (identifier.id) return { id: identifier.id };
     if (identifier.uuid) return { uuid: identifier.uuid };
     throw new Error('id or uuid is required');
   }
+
   private record(value: unknown): MasterDataRecord | null {
     if (value === null || typeof value !== 'object') return null;
     const record = value as Record<string, unknown>;
@@ -116,6 +124,7 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
 @Injectable()
 export class PrismaMasterDataRepositoryFactory implements MasterDataRepositoryFactory {
   private readonly adapters: Record<MasterDataEntityName, MasterDataRepository>;
+
   constructor(
     certification: PrismaCertificationRepository,
     coffeeBean: PrismaCoffeeBeanRepository,
@@ -147,6 +156,7 @@ export class PrismaMasterDataRepositoryFactory implements MasterDataRepositoryFa
       variety: new PrismaRepositoryAdapter(variety),
     };
   }
+
   get(entity: MasterDataEntityName): MasterDataRepository {
     return this.adapters[entity];
   }
