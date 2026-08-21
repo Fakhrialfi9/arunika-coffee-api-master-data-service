@@ -34,9 +34,6 @@ crud_exists() {
 field_exists() {
   grep -R -qE "^[[:space:]]*$2[[:space:]]" "$1"
 }
-relation_exists() {
-  grep -R -qE "^[[:space:]]*$2[[:space:]]+.*@relation\(fields:[[:space:]]*\[$3\]" "$1"
-}
 
 log "Arunika Coffee Master Data Service — Step 56-60 Verification"
 log "Branch: $(git branch --show-current 2>/dev/null || echo UNKNOWN)"
@@ -123,8 +120,13 @@ section "STEP 60 — COFFEE BEAN CRUD"
 for field in uuid code regionId farmerId farmId speciesId varietyId processingMethodId gradeId harvestSeasonId flavorProfiles aromaNotes availableWeight reservedWeight weightUnit isFeatured isActive sortOrder; do
   grep -R -qE "^[[:space:]]*$field[[:space:]]" prisma/schema/coffee-bean.prisma && pass "CoffeeBean field: $field" || fail "CoffeeBean field missing: $field"
 done
-grep -R -q 'Species/Variety' src/application/master-data/services/master-data-crud.service.ts && pass "Species/Variety consistency" || fail "Species/Variety consistency missing"
-grep -R -q 'Farmer/Farm' src/application/master-data/services/master-data-crud.service.ts && pass "Farmer/Farm consistency" || fail "Farmer/Farm consistency missing"
+# Validate the actual CoffeeBean invariants rather than depending on human-readable labels.
+grep -R -q 'varietyId must belong to the selected speciesId' src/application/master-data/services/master-data-crud.service.ts \
+  && pass "Species -> Variety consistency" \
+  || fail "Species -> Variety consistency missing"
+grep -R -q 'farmId must belong to farmerId' src/application/master-data/services/master-data-crud.service.ts \
+  && pass "Farmer -> Farm consistency" \
+  || fail "Farmer -> Farm consistency missing"
 grep -R -q 'flavorProfiles.*Json\|aromaNotes.*Json' prisma/schema/coffee-bean.prisma && pass "CoffeeBean JSON contract preserved" || fail "CoffeeBean JSON contract missing"
 
 section "REGRESSION — STEPS 26-55"
