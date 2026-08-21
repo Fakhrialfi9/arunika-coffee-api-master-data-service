@@ -96,7 +96,10 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
     data: MasterDataWrite,
   ) {
     return this.record(
-      await this.repository.update(this.where(identifier) as never, data as never),
+      await this.repository.update(
+        this.where(identifier) as never,
+        data as never,
+      ),
     ) as MasterDataRecord;
   }
 
