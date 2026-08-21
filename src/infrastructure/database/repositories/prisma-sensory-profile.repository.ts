@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '../../../../prisma/generated/prisma/client.js';
+
 import { PrismaBaseRepository } from './prisma-base.repository.js';
 
 @Injectable()
@@ -10,6 +11,10 @@ export class PrismaSensoryProfileRepository extends PrismaBaseRepository {
 
   findByUuid(uuid: string) {
     return this.execute(() => this.prisma.sensoryProfile.findUnique({ where: { uuid } }));
+  }
+
+  findByCoffeeBeanId(coffeeBeanId: string) {
+    return this.execute(() => this.prisma.sensoryProfile.findUnique({ where: { coffeeBeanId } }));
   }
 
   findMany(args?: Prisma.SensoryProfileFindManyArgs) {
