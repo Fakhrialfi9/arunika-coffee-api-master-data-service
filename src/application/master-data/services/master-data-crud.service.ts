@@ -68,6 +68,8 @@ export class MasterDataCrudService {
   async list(entity: MasterDataEntityName, query: MasterDataListQuery = {}) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 25;
+    const offset = query.offset;
+
     if (!Number.isInteger(page) || page < 1)
       throw new MasterDataValidationError(
         'page must be an integer greater than 0',
@@ -75,6 +77,14 @@ export class MasterDataCrudService {
     if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
       throw new MasterDataValidationError(
         'limit must be an integer between 1 and 100',
+      );
+    }
+    if (
+      offset !== undefined &&
+      (!Number.isInteger(offset) || offset < 0)
+    ) {
+      throw new MasterDataValidationError(
+        'offset must be a non-negative integer',
       );
     }
     if (
@@ -94,12 +104,17 @@ export class MasterDataCrudService {
           `Unsupported master-data filter: ${field}`,
         );
     }
+
+    const search = query.search?.trim();
     return this.factory.get(entity).list({
       page,
       limit,
+      offset,
+      search,
       sortBy: query.sortBy ?? 'sortOrder',
       sortOrder: query.sortOrder ?? 'asc',
-      ...query,
+      isActive: query.isActive,
+      filters: query.filters,
     });
   }
 

@@ -83,12 +83,13 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
   async list(query: MasterDataListQuery): Promise<MasterDataListResult> {
     const page = query.page ?? 1;
     const limit = query.limit ?? 25;
+    const offset = query.offset ?? (page - 1) * limit;
     const where = this.buildWhere(query);
     const sortBy = query.sortBy ?? 'sortOrder';
     const sortOrder = query.sortOrder ?? 'asc';
     const args = {
       where,
-      skip: (page - 1) * limit,
+      skip: offset,
       take: limit,
       orderBy: [{ [sortBy]: sortOrder }, { id: 'asc' }],
     };
@@ -138,8 +139,9 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
     }
     const search = query.search?.trim();
     const fields = SEARCH_FIELDS[this.entity];
-    if (search && fields.length > 0)
+    if (search && fields.length > 0) {
       where.OR = fields.map((field) => ({ [field]: { contains: search } }));
+    }
     return where;
   }
 

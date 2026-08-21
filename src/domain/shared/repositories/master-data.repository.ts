@@ -26,6 +26,7 @@ export type MasterDataWrite = Record<string, unknown>;
 export interface MasterDataListQuery {
   page?: number;
   limit?: number;
+  offset?: number;
   search?: string;
   isActive?: boolean;
   sortBy?: string;
