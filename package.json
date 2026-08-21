@@ -38,6 +38,7 @@
     "test:coverage:e2e": "prisma generate && vitest run --config vitest.e2e.config.ts --coverage",
     "test:all": "npm run test:unit && npm run test:e2e && npm run test:grpc && npm run test:security",
     "test:steps:26-45": "bash scripts/verify-steps-26-45-v2.sh",
+    "test:steps:51-55": "bash scripts/verify-steps-51-55.sh",
     "check:fix": "npm run format && npm run lint:fix",
     "check:health": "npm run lint && npm run typecheck && npm run test && npm run format:check && npm run build",
     "check:fresh": "npm run clean && npm ci && npm run check:health"
@@ -81,7 +82,6 @@
     "eslint-plugin-prettier": "5.5.6",
     "globals": "17.0.0",
     "prettier": "3.9.6",
-    "prisma": "7.9.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.67.0",
     "vitest": "4.1.10"
