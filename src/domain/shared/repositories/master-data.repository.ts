@@ -11,12 +11,16 @@ export type MasterDataEntityName =
   | 'harvestSeason'
   | 'certification'
   | 'flavorProfile'
+  | 'sensoryProfile'
+  | 'sensoryProfileFlavor'
   | 'coffeeBean';
 
-export type MasterDataRecord = Record<string, unknown> & {
+export interface MasterDataRecord {
   id: string;
   uuid: string;
-};
+  [key: string]: unknown;
+}
+
 export type MasterDataWrite = Record<string, unknown>;
 
 export interface MasterDataListQuery {
@@ -26,11 +30,18 @@ export interface MasterDataListQuery {
   isActive?: boolean;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  filters?: Record<string, string | number | boolean | undefined>;
 }
 
-export interface MasterDataListResult<
-  T extends MasterDataRecord = MasterDataRecord,
-> {
+export interface MasterDataQueryArgs {
+  where?: Record<string, unknown>;
+  include?: Record<string, unknown>;
+  orderBy?: unknown;
+  skip?: number;
+  take?: number;
+}
+
+export interface MasterDataListResult<T extends MasterDataRecord = MasterDataRecord> {
   items: T[];
   page: number;
   limit: number;
@@ -38,23 +49,18 @@ export interface MasterDataListResult<
   totalPages: number;
 }
 
-export interface MasterDataRepository<
-  T extends MasterDataRecord = MasterDataRecord,
-> {
+export interface MasterDataRepository<T extends MasterDataRecord = MasterDataRecord> {
   findById(id: string): Promise<T | null>;
   findByUuid(uuid: string): Promise<T | null>;
+  findMany(args?: MasterDataQueryArgs): Promise<T[]>;
   list(query: MasterDataListQuery): Promise<MasterDataListResult<T>>;
   create(data: MasterDataWrite): Promise<T>;
-  update(
-    identifier: { id?: string; uuid?: string },
-    data: MasterDataWrite,
-  ): Promise<T>;
+  update(identifier: { id?: string; uuid?: string }, data: MasterDataWrite): Promise<T>;
   delete(identifier: { id?: string; uuid?: string }): Promise<T>;
 }
 
-export const MASTER_DATA_REPOSITORY_FACTORY = Symbol(
-  'MASTER_DATA_REPOSITORY_FACTORY',
-);
+export const MASTER_DATA_REPOSITORY_FACTORY = Symbol('MASTER_DATA_REPOSITORY_FACTORY');
+
 export interface MasterDataRepositoryFactory {
   get(entity: MasterDataEntityName): MasterDataRepository;
 }

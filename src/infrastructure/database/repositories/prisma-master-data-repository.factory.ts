@@ -3,6 +3,7 @@ import type {
   MasterDataEntityName,
   MasterDataListQuery,
   MasterDataListResult,
+  MasterDataQueryArgs,
   MasterDataRecord,
   MasterDataRepository,
   MasterDataRepositoryFactory,
@@ -19,6 +20,8 @@ import { PrismaHarvestSeasonRepository } from './prisma-harvest-season.repositor
 import { PrismaOrganizationRepository } from './prisma-organization.repository.js';
 import { PrismaProcessingMethodRepository } from './prisma-processing-method.repository.js';
 import { PrismaRegionRepository } from './prisma-region.repository.js';
+import { PrismaSensoryProfileFlavorRepository } from './prisma-sensory-profile-flavor.repository.js';
+import { PrismaSensoryProfileRepository } from './prisma-sensory-profile.repository.js';
 import { PrismaSpeciesRepository } from './prisma-species.repository.js';
 import { PrismaVarietyRepository } from './prisma-variety.repository.js';
 
@@ -32,81 +35,73 @@ interface PrismaRepositoryLike {
   delete(where: never): Promise<unknown>;
 }
 
+const SEARCH_FIELDS: Record<MasterDataEntityName, string[]> = {
+  country: ['name', 'code', 'iso2', 'iso3'],
+  region: ['name', 'code', 'province', 'district', 'city'],
+  organization: ['name', 'code', 'type'],
+  farmer: ['name', 'code', 'type'],
+  farm: ['name'],
+  species: ['name', 'code', 'commonName', 'scientificName'],
+  variety: ['name', 'code'],
+  processingMethod: ['name', 'code', 'category'],
+  coffeeGrade: ['name', 'code', 'category'],
+  harvestSeason: ['name', 'label', 'seasonType'],
+  certification: ['name', 'code', 'type', 'issuer'],
+  flavorProfile: ['name', 'code', 'category'],
+  sensoryProfile: ['aroma', 'body', 'acidity', 'sweetness', 'aftertaste', 'description'],
+  sensoryProfileFlavor: [],
+  coffeeBean: ['name', 'code', 'lotNumber', 'qualityStatus', 'beanSize'],
+};
+
 class PrismaRepositoryAdapter implements MasterDataRepository {
-  constructor(private readonly repository: PrismaRepositoryLike) {}
+  constructor(private readonly entity: MasterDataEntityName, private readonly repository: PrismaRepositoryLike) {}
 
-  async findById(id: string) {
-    return this.record(await this.repository.findById(id));
-  }
+  async findById(id: string) { return this.record(await this.repository.findById(id)); }
+  async findByUuid(uuid: string) { return this.record(await this.repository.findByUuid(uuid)); }
 
-  async findByUuid(uuid: string) {
-    return this.record(await this.repository.findByUuid(uuid));
+  async findMany(args: MasterDataQueryArgs = {}) {
+    const rows = await this.repository.findMany(args as never);
+    return rows.map((row) => this.record(row)).filter((row): row is MasterDataRecord => row !== null);
   }
 
   async list(query: MasterDataListQuery): Promise<MasterDataListResult> {
-    const page = Math.max(1, query.page ?? 1);
-    const limit = Math.min(100, Math.max(1, query.limit ?? 25));
-    const where: Record<string, unknown> = {};
-    if (query.isActive !== undefined) where.isActive = query.isActive;
-    if (query.search?.trim()) where.name = { contains: query.search.trim() };
+    const page = query.page ?? 1;
+    const limit = query.limit ?? 25;
+    const where = this.buildWhere(query);
     const sortBy = query.sortBy ?? 'sortOrder';
-    if (
-      ![
-        'id',
-        'uuid',
-        'code',
-        'name',
-        'sortOrder',
-        'createdAt',
-        'updatedAt',
-        'year',
-      ].includes(sortBy)
-    )
-      throw new Error(`Unsupported master-data sort field: ${sortBy}`);
+    const sortOrder = query.sortOrder ?? 'asc';
     const args = {
       where,
       skip: (page - 1) * limit,
       take: limit,
-      orderBy: { [sortBy]: query.sortOrder ?? 'asc' },
+      orderBy: [{ [sortBy]: sortOrder }, { id: 'asc' }],
     };
     const [rows, total] = await Promise.all([
       this.repository.findMany(args as never),
       this.repository.count({ where } as never),
     ]);
-    const items = rows
-      .map((row) => this.record(row))
-      .filter((row): row is MasterDataRecord => row !== null);
-    return {
-      items,
-      page,
-      limit,
-      total,
-      totalPages: total === 0 ? 0 : Math.ceil(total / limit),
-    };
+    const items = rows.map((row) => this.record(row)).filter((row): row is MasterDataRecord => row !== null);
+    return { items, page, limit, total, totalPages: total === 0 ? 0 : Math.ceil(total / limit) };
   }
 
-  async create(data: MasterDataWrite) {
-    return this.record(
-      await this.repository.create(data as never),
-    ) as MasterDataRecord;
+  async create(data: MasterDataWrite) { return this.record(await this.repository.create(data as never)) as MasterDataRecord; }
+  async update(identifier: { id?: string; uuid?: string }, data: MasterDataWrite) {
+    return this.record(await this.repository.update(this.where(identifier) as never, data as never)) as MasterDataRecord;
   }
-
-  async update(
-    identifier: { id?: string; uuid?: string },
-    data: MasterDataWrite,
-  ) {
-    return this.record(
-      await this.repository.update(
-        this.where(identifier) as never,
-        data as never,
-      ),
-    ) as MasterDataRecord;
-  }
-
   async delete(identifier: { id?: string; uuid?: string }) {
-    return this.record(
-      await this.repository.delete(this.where(identifier) as never),
-    ) as MasterDataRecord;
+    return this.record(await this.repository.delete(this.where(identifier) as never)) as MasterDataRecord;
+  }
+
+  private buildWhere(query: MasterDataListQuery): Record<string, unknown> {
+    const where: Record<string, unknown> = {};
+    if (query.isActive !== undefined) where.isActive = query.isActive;
+    for (const [field, value] of Object.entries(query.filters ?? {})) {
+      if (value !== undefined) where[field] = value;
+    }
+    const search = query.search?.trim();
+    const fields = SEARCH_FIELDS[this.entity];
+    if (search && fields.length > 0) where.OR = fields.map((field) => ({ [field]: { contains: search } }));
+    return where;
   }
 
   private where(identifier: { id?: string; uuid?: string }) {
@@ -118,8 +113,7 @@ class PrismaRepositoryAdapter implements MasterDataRepository {
   private record(value: unknown): MasterDataRecord | null {
     if (value === null || typeof value !== 'object') return null;
     const record = value as Record<string, unknown>;
-    if (typeof record.id !== 'string' || typeof record.uuid !== 'string')
-      throw new Error('Persistence record must expose id and uuid');
+    if (typeof record.id !== 'string' || typeof record.uuid !== 'string') throw new Error('Persistence record must expose id and uuid');
     return record as MasterDataRecord;
   }
 }
@@ -140,27 +134,29 @@ export class PrismaMasterDataRepositoryFactory implements MasterDataRepositoryFa
     organization: PrismaOrganizationRepository,
     processingMethod: PrismaProcessingMethodRepository,
     region: PrismaRegionRepository,
+    sensoryProfile: PrismaSensoryProfileRepository,
+    sensoryProfileFlavor: PrismaSensoryProfileFlavorRepository,
     species: PrismaSpeciesRepository,
     variety: PrismaVarietyRepository,
   ) {
     this.adapters = {
-      certification: new PrismaRepositoryAdapter(certification),
-      coffeeBean: new PrismaRepositoryAdapter(coffeeBean),
-      coffeeGrade: new PrismaRepositoryAdapter(coffeeGrade),
-      country: new PrismaRepositoryAdapter(country),
-      farm: new PrismaRepositoryAdapter(farm),
-      farmer: new PrismaRepositoryAdapter(farmer),
-      flavorProfile: new PrismaRepositoryAdapter(flavorProfile),
-      harvestSeason: new PrismaRepositoryAdapter(harvestSeason),
-      organization: new PrismaRepositoryAdapter(organization),
-      processingMethod: new PrismaRepositoryAdapter(processingMethod),
-      region: new PrismaRepositoryAdapter(region),
-      species: new PrismaRepositoryAdapter(species),
-      variety: new PrismaRepositoryAdapter(variety),
+      certification: new PrismaRepositoryAdapter('certification', certification),
+      coffeeBean: new PrismaRepositoryAdapter('coffeeBean', coffeeBean),
+      coffeeGrade: new PrismaRepositoryAdapter('coffeeGrade', coffeeGrade),
+      country: new PrismaRepositoryAdapter('country', country),
+      farm: new PrismaRepositoryAdapter('farm', farm),
+      farmer: new PrismaRepositoryAdapter('farmer', farmer),
+      flavorProfile: new PrismaRepositoryAdapter('flavorProfile', flavorProfile),
+      harvestSeason: new PrismaRepositoryAdapter('harvestSeason', harvestSeason),
+      organization: new PrismaRepositoryAdapter('organization', organization),
+      processingMethod: new PrismaRepositoryAdapter('processingMethod', processingMethod),
+      region: new PrismaRepositoryAdapter('region', region),
+      sensoryProfile: new PrismaRepositoryAdapter('sensoryProfile', sensoryProfile),
+      sensoryProfileFlavor: new PrismaRepositoryAdapter('sensoryProfileFlavor', sensoryProfileFlavor),
+      species: new PrismaRepositoryAdapter('species', species),
+      variety: new PrismaRepositoryAdapter('variety', variety),
     };
   }
 
-  get(entity: MasterDataEntityName): MasterDataRepository {
-    return this.adapters[entity];
-  }
+  get(entity: MasterDataEntityName): MasterDataRepository { return this.adapters[entity]; }
 }
