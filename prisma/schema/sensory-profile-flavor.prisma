@@ -33,7 +33,6 @@ model SensoryProfileFlavor {
    * Constraints
    */
   @@unique([sensoryProfileId, flavorProfileId])
-  @@index([sensoryProfileId])
   @@index([flavorProfileId])
   @@map("sensory_profile_flavors")
 }
