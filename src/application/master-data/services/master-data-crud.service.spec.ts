@@ -9,50 +9,62 @@ function repository(
   seed: Record<string, Record<string, unknown>>,
 ): MasterDataRepository {
   return {
-    async findById(id) {
-      return (
-        (Object.values(seed).find((row) => row.id === id) as never) ?? null
+    findById(id) {
+      return Promise.resolve(
+        (Object.values(seed).find((row) => row.id === id) as never) ?? null,
       );
     },
-    async findByUuid(uuid) {
-      return (
-        (Object.values(seed).find((row) => row.uuid === uuid) as never) ?? null
+    findByUuid(uuid) {
+      return Promise.resolve(
+        (Object.values(seed).find((row) => row.uuid === uuid) as never) ?? null,
       );
     },
-    async list() {
-      return {
+    list() {
+      return Promise.resolve({
         items: Object.values(seed) as never,
         page: 1,
         limit: 25,
         total: Object.keys(seed).length,
         totalPages: 1,
-      };
+      });
     },
-    async create(data) {
+    create(data) {
       const row = { id: 'new-id', uuid: String(data.uuid), ...data };
       seed[row.uuid] = row;
-      return row;
+      return Promise.resolve(row as never);
     },
-    async update(identifier, data) {
+    update(identifier, data) {
       const row = Object.values(seed).find(
         (item) => identifier.id === item.id || identifier.uuid === item.uuid,
       );
-      if (!row) throw new Error('not found');
+      if (!row) return Promise.reject(new Error('not found'));
       Object.assign(row, data);
-      return row as never;
+      return Promise.resolve(row as never);
     },
-    async delete(identifier) {
-      const key = Object.keys(seed).find(
-        (item) =>
-          identifier.id === seed[item].id ||
-          identifier.uuid === seed[item].uuid,
-      );
-      if (!key) throw new Error('not found');
+    delete(identifier) {
+      const key = Object.keys(seed).find((item) => {
+        const row = seed[item];
+        return (
+          row !== undefined &&
+          (identifier.id === row.id || identifier.uuid === row.uuid)
+        );
+      });
+      if (!key) return Promise.reject(new Error('not found'));
       const row = seed[key];
+      if (!row) return Promise.reject(new Error('not found'));
       delete seed[key];
-      return row as never;
+      return Promise.resolve(row as never);
     },
   };
+}
+
+function getRepository(
+  repositories: Record<string, MasterDataRepository>,
+  entity: string,
+): MasterDataRepository {
+  const repository = repositories[entity];
+  if (!repository) throw new Error(`Repository not configured: ${entity}`);
+  return repository;
 }
 
 describe('MasterDataCrudService', () => {
@@ -62,7 +74,7 @@ describe('MasterDataCrudService', () => {
       region: repository({}),
     } as Record<string, MasterDataRepository>;
     const factory: MasterDataRepositoryFactory = {
-      get: (entity) => repositories[entity],
+      get: (entity) => getRepository(repositories, entity),
     };
     const service = new MasterDataCrudService(factory);
     await expect(
@@ -80,7 +92,7 @@ describe('MasterDataCrudService', () => {
       MasterDataRepository
     >;
     const service = new MasterDataCrudService({
-      get: (entity) => repositories[entity],
+      get: (entity) => getRepository(repositories, entity),
     });
     const created = await service.create('country', {
       code: 'ID',
