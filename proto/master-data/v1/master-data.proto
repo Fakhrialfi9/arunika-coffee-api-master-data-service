@@ -4,6 +4,12 @@ package arunika.coffee.master_data.v1;
 
 service MasterDataService {
   rpc GetHealth(GetHealthRequest) returns (GetHealthResponse);
+  rpc CreateMasterData(CreateMasterDataRequest) returns (MasterDataResponse);
+  rpc GetMasterData(GetMasterDataRequest) returns (MasterDataResponse);
+  rpc ListMasterData(ListMasterDataRequest) returns (MasterDataListResponse);
+  rpc UpdateMasterData(UpdateMasterDataRequest) returns (MasterDataResponse);
+  rpc DeleteMasterData(DeleteMasterDataRequest) returns (MasterDataResponse);
+  rpc GetRelationship(GetRelationshipRequest) returns (MasterDataListResponse);
 }
 
 message GetHealthRequest {}
@@ -11,4 +17,59 @@ message GetHealthRequest {}
 message GetHealthResponse {
   string service = 1;
   string status = 2;
+}
+
+message CreateMasterDataRequest {
+  string entity = 1;
+  string data_json = 2;
+}
+
+message GetMasterDataRequest {
+  string entity = 1;
+  string id = 2;
+  string uuid = 3;
+}
+
+message ListMasterDataRequest {
+  string entity = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  int32 offset = 4;
+  string search = 5;
+  bool is_active = 6;
+  string sort_by = 7;
+  string sort_order = 8;
+  string filters_json = 9;
+}
+
+message UpdateMasterDataRequest {
+  string entity = 1;
+  string id = 2;
+  string uuid = 3;
+  string data_json = 4;
+}
+
+message DeleteMasterDataRequest {
+  string entity = 1;
+  string id = 2;
+  string uuid = 3;
+}
+
+message GetRelationshipRequest {
+  string relationship = 1;
+  string id = 2;
+  int32 page = 3;
+  int32 limit = 4;
+}
+
+message MasterDataResponse {
+  string data_json = 1;
+}
+
+message MasterDataListResponse {
+  string items_json = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  int32 total = 4;
+  int32 total_pages = 5;
 }
