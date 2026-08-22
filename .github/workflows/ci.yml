@@ -12,7 +12,7 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     services:
       mysql:
@@ -113,3 +113,60 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Step 86 Docker build
+        run: docker build -t arunika-coffee-master-data-service:ci .
+
+      - name: Step 86 Docker runtime and healthcheck
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          cleanup() {
+            docker rm -f arunika-master-data-ci >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run -d \
+            --name arunika-master-data-ci \
+            --network host \
+            -e NODE_ENV=test \
+            -e APP_NAME=arunika-coffee-api-master-data-service \
+            -e APP_HOST=0.0.0.0 \
+            -e APP_PORT=3000 \
+            -e DATABASE_HOST=127.0.0.1 \
+            -e DATABASE_PORT=3306 \
+            -e DATABASE_NAME=arunika_coffee_master_data_test \
+            -e DATABASE_USER=ci \
+            -e DATABASE_PASSWORD=ci \
+            -e DATABASE_URL=mysql://ci:ci@127.0.0.1:3306/arunika_coffee_master_data_test \
+            -e DATABASE_POOL_CONNECTION_LIMIT=5 \
+            -e DATABASE_CONNECT_TIMEOUT_MS=5000 \
+            -e DATABASE_ACQUIRE_TIMEOUT_MS=10000 \
+            -e DATABASE_POOL_IDLE_TIMEOUT_SEC=60 \
+            -e GRPC_MASTER_HOST=127.0.0.1 \
+            -e GRPC_MASTER_PORT=50053 \
+            -e MASTER_GRPC_TIMEOUT_MS=3000 \
+            -e SECURITY_CORS_ORIGINS=http://localhost:3000 \
+            -e SECURITY_RATE_LIMIT_TTL=60000 \
+            -e SECURITY_RATE_LIMIT_MAX=1000 \
+            -e SECURITY_BODY_LIMIT=1mb \
+            -e SECURITY_GRPC_MAX_MESSAGE_BYTES=1048576 \
+            -e SECURITY_TRUST_PROXY=loopback \
+            -e LOG_ENABLED=false \
+            -e LOG_LEVEL=warn \
+            -e OTEL_SERVICE_NAME=arunika-coffee-api-master-data-service-test \
+            -e OTEL_TRACING_ENABLED=false \
+            -e OTEL_TRACES_SAMPLER_ARG=0 \
+            -e OTEL_METRICS_ENABLED=false \
+            -e OTEL_METRIC_EXPORT_INTERVAL=60000 \
+            arunika-coffee-master-data-service:ci
+
+          for attempt in {1..30}; do
+            if docker exec arunika-master-data-ci node scripts/docker-healthcheck.mjs; then
+              exit 0
+            fi
+            sleep 2
+          done
+
+          docker logs arunika-master-data-ci
+          exit 1

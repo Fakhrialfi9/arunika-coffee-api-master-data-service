@@ -50,15 +50,21 @@ async function bootstrap(): Promise<void> {
   await app.listen();
   await healthServiceRef.current.startMonitoring();
 
-  logger.log(
-    JSON.stringify({
-      event: 'service.started',
-      service: config.name,
-      environment: config.environment,
-      transport: 'grpc',
-      address: `${config.grpcMasterHost}:${config.grpcMasterPort}`,
-    }),
-  );
+  if (config.logEnabled) {
+    logger.log(
+      JSON.stringify({
+        event: 'service.started',
+        service: config.otelServiceName,
+        environment: config.environment,
+        transport: 'grpc',
+        address: `${config.grpcMasterHost}:${config.grpcMasterPort}`,
+        health: {
+          liveness: 'liveness',
+          readiness: 'readiness',
+        },
+      }),
+    );
+  }
 }
 
 void bootstrap();

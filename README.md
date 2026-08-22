@@ -1,98 +1,127 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Arunika Coffee API — Master Data Service
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS 11 / TypeScript microservice that owns the `arunika_coffee_master_data` MySQL database and exposes its transport boundary through gRPC.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Architecture
 
-## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
-
-```bash
-$ npm install
+```text
+Client
+  |
+  v
+Main / API Gateway
+  |
+  | gRPC
+  v
+Master Data Service
+  |
+  v
+arunika_coffee_master_data
 ```
 
-## Compile and run the project
+The Master Data Service is the only owner of its database. Main and Users Service must never connect to this database directly.
+
+## Runtime
+
+- Node.js: 22.x
+- Package manager: npm 11.18.0
+- Database: MySQL
+- Prisma: 7.9.1
+- gRPC port: `50053` by default
+- gRPC package: `arunika.coffee.master_data.v1`
+
+## Setup
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm ci
+npm run prisma:generate
+npm run prisma:deploy
+npm run prisma:seed
 ```
 
-## Run tests
+Use `npm run prisma:migrate` only for development migration work. Production uses `npm run prisma:deploy`.
+
+## Development
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Quality gates
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run prisma:generate
+npx prisma validate
+npm run typecheck
+npm run lint
+npm run format:check
+npm run test:unit
+npm run test:integration
+npm run test:e2e
+npm run test:grpc
+npm run test:security
+npm run build
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Full existing regression suite:
 
-## Resources
+```bash
+npm run test:all
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Docker
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+docker build -t arunika-coffee-master-data-service:latest .
+```
 
-## Support
+The production image uses Node 22, a multi-stage build, production dependencies only, a non-root `node` user, and the gRPC healthcheck. Runtime secrets are supplied through environment variables and are not copied into the image.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Configuration
 
-## Stay in touch
+Development, test, and production examples are provided as:
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+- `.env.example`
+- `.env.test.example`
+- `.env.production.example`
 
-## License
+Production rejects local database hosts, weak credentials, local CORS origins, development log levels, and invalid database URLs.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Health
+
+The standard gRPC health service exposes:
+
+- `liveness` — process/server health; independent of MySQL.
+- `readiness` — database dependency health.
+- `arunika.coffee.master_data.v1.MasterDataService` — follows readiness.
+
+The container healthcheck checks `liveness`.
+
+## Observability
+
+Structured JSON logs include service/RPC events and a correlation `x-request-id`. Incoming valid request IDs are reused; otherwise one is generated. Error responses include the correlation ID without exposing database or stack-trace details.
+
+OpenTelemetry SDK/auto-instrumentation is lifecycle-managed and controlled by the `OTEL_*` environment settings. Metrics/tracing remain outside business logic.
+
+## Documentation
+
+- `docs/architecture.md`
+- `docs/database.md`
+- `docs/geography.md`
+- `docs/farmer-farm.md`
+- `docs/organization.md`
+- `docs/deployment.md`
+- `docs/grpc.md`
+
+## Verification
+
+The step-specific verification scripts live under `scripts/verify/`.
+
+```bash
+bash scripts/verify/steps-81-90.sh
+```
+
+The verifier intentionally fails when the repository contains a known blocker instead of reporting a false PASS.
+
+## Current gRPC compatibility note
+
+The repository currently contains a health-only `master-data.proto`. The application/domain CRUD and relationship services exist, but the full CRUD/relationship gRPC contract required by the earlier Step 71–75 acceptance criteria is not currently exposed by the gRPC controller. This is a known blocker for Step 89 and therefore Step 90 cannot honestly be marked PASS until the contract is completed and regression-tested.

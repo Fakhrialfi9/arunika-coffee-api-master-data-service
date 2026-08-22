@@ -13,7 +13,19 @@ export interface AppConfig {
   databaseConnectTimeoutMs: number;
   databaseAcquireTimeoutMs: number;
   databasePoolIdleTimeoutSec: number;
+  logEnabled: boolean;
+  logLevel: string;
+  otelServiceName: string;
+  otelTracingEnabled: boolean;
+  otelTracesSamplerArg: number;
+  otelMetricsEnabled: boolean;
+  otelMetricExportInterval: number;
 }
+
+const toBoolean = (value: string | undefined, fallback: boolean): boolean => {
+  if (value === undefined) return fallback;
+  return value.toLowerCase() === 'true';
+};
 
 export const appConfig = registerAs('app', (): AppConfig => ({
   name: process.env.APP_NAME ?? 'arunika-coffee-api-master-data-service',
@@ -37,5 +49,16 @@ export const appConfig = registerAs('app', (): AppConfig => ({
   ),
   databasePoolIdleTimeoutSec: Number(
     process.env.DATABASE_POOL_IDLE_TIMEOUT_SEC ?? 300,
+  ),
+  logEnabled: toBoolean(process.env.LOG_ENABLED, true),
+  logLevel: process.env.LOG_LEVEL ?? 'info',
+  otelServiceName:
+    process.env.OTEL_SERVICE_NAME ??
+    'arunika-coffee-api-master-data-service',
+  otelTracingEnabled: toBoolean(process.env.OTEL_TRACING_ENABLED, true),
+  otelTracesSamplerArg: Number(process.env.OTEL_TRACES_SAMPLER_ARG ?? 1),
+  otelMetricsEnabled: toBoolean(process.env.OTEL_METRICS_ENABLED, true),
+  otelMetricExportInterval: Number(
+    process.env.OTEL_METRIC_EXPORT_INTERVAL ?? 60000,
   ),
 }));

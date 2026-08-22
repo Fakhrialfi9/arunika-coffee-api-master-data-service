@@ -4,6 +4,7 @@ import { plainToInstance, Type } from 'class-transformer';
 import {
   IsBooleanString,
   IsEnum,
+  IsIn,
   IsInt,
   IsNotEmpty,
   IsNumberString,
@@ -143,9 +144,8 @@ class EnvironmentVariables {
   @IsBooleanString()
   LOG_ENABLED = 'true';
 
-  @IsString()
-  @IsNotEmpty()
-  LOG_LEVEL = 'debug';
+  @IsIn(['fatal', 'error', 'warn', 'info', 'debug', 'verbose'])
+  LOG_LEVEL = 'info';
 
   @IsString()
   @IsNotEmpty()
@@ -155,6 +155,7 @@ class EnvironmentVariables {
   OTEL_TRACING_ENABLED = 'true';
 
   @IsNumberString()
+  @Matches(/^(?:0(?:\.\d+)?|1(?:\.0+)?)$/)
   OTEL_TRACES_SAMPLER_ARG = '1';
 
   @IsBooleanString()
@@ -162,7 +163,8 @@ class EnvironmentVariables {
 
   @Type(() => Number)
   @IsInt()
-  @Min(1)
+  @Min(1000)
+  @Max(3600000)
   OTEL_METRIC_EXPORT_INTERVAL = 60000;
 }
 
@@ -258,7 +260,11 @@ export function validateEnvironment(
     );
   }
 
-  parseDatabaseUrl(validatedConfig.DATABASE_URL);
+  const databaseUrl = parseDatabaseUrl(validatedConfig.DATABASE_URL);
+  const databaseName = databaseUrl.pathname.replace(/^\//, '');
+  if (databaseName !== validatedConfig.DATABASE_NAME) {
+    throw new Error('DATABASE_URL database name must match DATABASE_NAME');
+  }
 
   if (validatedConfig.NODE_ENV === NodeEnvironment.Production) {
     validateProductionEnvironment(validatedConfig);
