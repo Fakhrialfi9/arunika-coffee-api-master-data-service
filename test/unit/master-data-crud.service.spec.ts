@@ -44,10 +44,10 @@ describe('MasterDataCrudService critical business behavior', () => {
       MasterDataValidationError,
     );
     await expect(
-      service.list('country', { sortBy: 'DROP TABLE countries' as never }),
+      service.list('country', { sortBy: 'DROP TABLE countries' }),
     ).rejects.toBeInstanceOf(MasterDataValidationError);
     await expect(
-      service.list('country', { filters: { password: 'x' } as never }),
+      service.list('country', { filters: { password: 'x' } }),
     ).rejects.toBeInstanceOf(MasterDataValidationError);
 
     expect(repository.list).not.toHaveBeenCalled();
@@ -58,9 +58,9 @@ describe('MasterDataCrudService critical business behavior', () => {
       findById: vi.fn().mockResolvedValue(record('region-1')),
     };
     const organizationRepository = {
-      findById: vi.fn().mockResolvedValue(
-        record('org-1', { regionId: 'region-2' }),
-      ),
+      findById: vi
+        .fn()
+        .mockResolvedValue(record('org-1', { regionId: 'region-2' })),
     };
     const farmerRepository = { create: vi.fn() };
     const factory = {

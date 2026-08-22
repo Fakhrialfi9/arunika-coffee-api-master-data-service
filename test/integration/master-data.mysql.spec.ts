@@ -3,7 +3,10 @@ import { Test, type TestingModule } from '@nestjs/testing';
 
 import { AppModule } from '../../src/app.module.js';
 import { MasterDataCrudUseCase } from '../../src/application/master-data/use-cases/master-data-crud.use-case.js';
-import type { MasterDataEntityName, MasterDataRepositoryFactory } from '../../src/domain/shared/repositories/master-data.repository.js';
+import type {
+  MasterDataEntityName,
+  MasterDataRepositoryFactory,
+} from '../../src/domain/shared/repositories/master-data.repository.js';
 import { PrismaService } from '../../src/infrastructure/database/prisma.service.js';
 import { PrismaMasterDataRepositoryFactory } from '../../src/infrastructure/database/repositories/prisma-master-data-repository.factory.js';
 import { seedMasterData } from '../../prisma/seeds/index.js';
@@ -111,15 +114,15 @@ describe('Step 77/78 real MySQL repository and database integration', () => {
     expect(updated.name).toBe('Integration Country Updated');
 
     await useCase.delete('country', { uuid: created.uuid });
-    await expect(useCase.get('country', { uuid: created.uuid })).rejects.toThrow(
-      'country was not found',
-    );
+    await expect(
+      useCase.get('country', { uuid: created.uuid }),
+    ).rejects.toThrow('country was not found');
   });
 
   it('enforces unique and foreign-key constraints against real MySQL', async () => {
-    const country = await factory.get('country').findByUuid(
-      '00000000-0000-4000-8000-000000000001',
-    );
+    const country = await factory
+      .get('country')
+      .findByUuid('00000000-0000-4000-8000-000000000001');
     expect(country).not.toBeNull();
 
     await expect(
@@ -129,7 +132,7 @@ describe('Step 77/78 real MySQL repository and database integration', () => {
         name: 'Duplicate Country',
         iso2: 'DI',
         iso3: 'DUP',
-      } as never),
+      }),
     ).rejects.toMatchObject({ code: 'REPOSITORY_UNIQUE_CONSTRAINT' });
 
     await expect(
@@ -143,9 +146,9 @@ describe('Step 77/78 real MySQL repository and database integration', () => {
   });
 
   it('round-trips JSON fields through real MySQL', async () => {
-    const coffeeBean = await factory.get('coffeeBean').findByUuid(
-      '00000000-0000-4000-8000-000000000013',
-    );
+    const coffeeBean = await factory
+      .get('coffeeBean')
+      .findByUuid('00000000-0000-4000-8000-000000000013');
     expect(coffeeBean).toMatchObject({
       flavorProfiles: ['chocolate'],
       aromaNotes: ['cocoa', 'caramel'],
@@ -182,7 +185,9 @@ describe('Step 77/78 real MySQL repository and database integration', () => {
       }),
     ).rejects.toThrow('force rollback');
 
-    expect(await prisma.country.findUnique({ where: { code: 'TXR' } })).toBeNull();
+    expect(
+      await prisma.country.findUnique({ where: { code: 'TXR' } }),
+    ).toBeNull();
     await prisma.country.delete({ where: { code: 'TXC' } });
   });
 });

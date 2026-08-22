@@ -27,14 +27,17 @@ describe('CoffeeBean entity', () => {
     expect(bean.toPrimitives().sortOrder).toBe(0);
   });
 
-  it.each(['code', 'name', 'regionId', 'speciesId', 'processingMethodId'] as const)(
-    'rejects a missing required %s',
-    (field) => {
-      expect(() => CoffeeBean.create({ ...base, [field]: '' })).toThrow(
-        `CoffeeBean ${field} is required`,
-      );
-    },
-  );
+  it.each([
+    'code',
+    'name',
+    'regionId',
+    'speciesId',
+    'processingMethodId',
+  ] as const)('rejects a missing required %s', (field) => {
+    expect(() => CoffeeBean.create({ ...base, [field]: '' })).toThrow(
+      `CoffeeBean ${field} is required`,
+    );
+  });
 
   it('accepts JSON values and explicit nullable relationships', () => {
     const bean = CoffeeBean.create({

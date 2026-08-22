@@ -47,9 +47,8 @@ describe('Step 80 security hardening', () => {
   });
 
   it('rejects malicious application list input before it reaches persistence', async () => {
-    const { MasterDataCrudService } = await import(
-      '../../src/application/master-data/services/master-data-crud.service.js'
-    );
+    const { MasterDataCrudService } =
+      await import('../../src/application/master-data/services/master-data-crud.service.js');
     const repository = { list: async () => ({}) };
     const factory = { get: () => repository } as never;
     const service = new MasterDataCrudService(factory);
@@ -57,7 +56,7 @@ describe('Step 80 security hardening', () => {
     await expect(
       service.list('country', {
         search: "' OR 1=1 --",
-        sortBy: 'name; DROP TABLE countries' as never,
+        sortBy: 'name; DROP TABLE countries',
       }),
     ).rejects.toThrow('Unsupported master-data sort field');
   });
