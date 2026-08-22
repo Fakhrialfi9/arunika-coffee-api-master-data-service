@@ -17,7 +17,15 @@ esac
 
 export NODE_ENV=test
 
-log "Database target: $DATABASE_URL"
+# Never print DATABASE_URL verbatim because it may contain database credentials.
+masked_database_url="$(node --input-type=module -e '
+const url = new URL(process.env.DATABASE_URL);
+url.username = "***";
+url.password = "***";
+console.log(url.toString());
+')"
+
+log "Database target: $masked_database_url"
 
 log "Prisma schema validation"
 npx prisma validate
