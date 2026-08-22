@@ -6,6 +6,18 @@ The Master Data Service uses protobuf package `arunika.coffee.master_data.v1` an
 
 `proto/master-data/v1/master-data.proto` is the canonical transport contract owned by this service. Consumers must copy/sync the versioned contract rather than access the Master Data database.
 
+The `MasterDataService` contract exposes:
+
+- `GetHealth`
+- `CreateMasterData`
+- `GetMasterData`
+- `ListMasterData`
+- `UpdateMasterData`
+- `DeleteMasterData`
+- `GetRelationship`
+
+CRUD request payloads use `data_json` / `filters_json` to keep the transport contract stable while allowing the application layer to own domain-specific field validation. Responses return serialized JSON data plus explicit pagination metadata for list operations.
+
 The server also registers the standard gRPC health-check protocol from `grpc-health-check`.
 
 ## Health semantics
@@ -31,4 +43,4 @@ Internal Prisma/database details are never returned as consumer-facing error mes
 
 The Main/API Gateway must consume this service exclusively through gRPC. It must not connect directly to `arunika_coffee_master_data`.
 
-The current repository contains a minimal health-only Master Data protobuf/RPC surface. Full CRUD and relationship RPCs required by the earlier Step 71–75 contract are not present in the current `master-data.proto`; this is a known compatibility blocker for Step 89 and must be resolved before claiming consumer readiness.
+Consumers should pin/sync the versioned proto contract and honor the configured gRPC timeout. The Master Data Service remains the sole owner of the Master Data database.
