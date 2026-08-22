@@ -170,3 +170,6 @@ jobs:
 
           docker logs arunika-master-data-ci
           exit 1
+
+      - name: Steps 90-93 final verification
+        run: npm run verify:final
