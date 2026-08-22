@@ -12,10 +12,12 @@ fi
 
 docker run -d \
   --name "$CONTAINER_NAME" \
-  -p 50051:50051 \
+  -p 3000:3000 \
+  -p 50053:50053 \
   -e NODE_ENV=development \
   -e APP_NAME=arunika-coffee-api-master-data-service \
   -e APP_HOST=0.0.0.0 \
+  -e APP_PORT=3000 \
   -e DATABASE_HOST=host.docker.internal \
   -e DATABASE_PORT=3306 \
   -e DATABASE_NAME=arunika_coffee_master_data \
@@ -26,9 +28,9 @@ docker run -d \
   -e DATABASE_CONNECT_TIMEOUT_MS=5000 \
   -e DATABASE_ACQUIRE_TIMEOUT_MS=10000 \
   -e DATABASE_POOL_IDLE_TIMEOUT_SEC=300 \
-  -e GRPC_USERS_HOST=0.0.0.0 \
-  -e GRPC_USERS_PORT=50051 \
-  -e USERS_GRPC_TIMEOUT_MS=3000 \
+  -e GRPC_MASTER_HOST=0.0.0.0 \
+  -e GRPC_MASTER_PORT=50053 \
+  -e MASTER_GRPC_TIMEOUT_MS=3000 \
   -e SECURITY_CORS_ORIGINS=http://localhost:3000 \
   -e SECURITY_RATE_LIMIT_TTL=60000 \
   -e SECURITY_RATE_LIMIT_MAX=100 \
@@ -38,9 +40,9 @@ docker run -d \
   -e LOG_ENABLED=true \
   -e LOG_LEVEL=debug \
   -e OTEL_SERVICE_NAME=arunika-coffee-api-master-data-service \
-  -e OTEL_TRACING_ENABLED=false \
-  -e OTEL_TRACES_SAMPLER_ARG=0 \
-  -e OTEL_METRICS_ENABLED=false \
+  -e OTEL_TRACING_ENABLED=true \
+  -e OTEL_TRACES_SAMPLER_ARG=1 \
+  -e OTEL_METRICS_ENABLED=true \
   -e OTEL_METRIC_EXPORT_INTERVAL=60000 \
   "$IMAGE_NAME"
 
