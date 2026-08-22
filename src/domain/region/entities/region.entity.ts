@@ -40,7 +40,8 @@ export class Region {
       uuid: props.uuid ?? randomUUID(),
       createdAt: props.createdAt ?? now,
       updatedAt: props.updatedAt ?? now,
-      altitudeUnit: props.altitudeUnit === undefined ? 'MASL' : props.altitudeUnit,
+      altitudeUnit:
+        props.altitudeUnit === undefined ? 'MASL' : props.altitudeUnit,
       isActive: props.isActive ?? true,
       sortOrder: props.sortOrder ?? 0,
     }).validate();
