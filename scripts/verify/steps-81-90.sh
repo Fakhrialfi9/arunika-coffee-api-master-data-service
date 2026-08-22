@@ -49,7 +49,7 @@ run grep -q "Promise.race" src/infrastructure/database/database-health.service.t
 pass_step 83 "Liveness/readiness and bounded database health checks are present."
 
 # STEP 84 — Graceful Shutdown
-run grep -q "enableShutdownHooks(\['SIGINT', 'SIGTERM'\]\)" src/main.ts
+run grep -Fq "app.enableShutdownHooks(['SIGINT', 'SIGTERM']);" src/main.ts
 run grep -q "onApplicationShutdown" src/infrastructure/database/prisma.service.ts
 run grep -q "onApplicationShutdown" src/presentation/grpc/health/grpc-health.service.ts
 pass_step 84 "SIGINT/SIGTERM hooks and Prisma/gRPC health lifecycle cleanup are present."
@@ -97,9 +97,6 @@ run grep -q "liveness" README.md
 pass_step 88 "Primary runtime, gRPC, deployment, configuration, and observability documentation exists."
 
 # STEP 89 — Consumer Readiness
-# This is deliberately strict. The current repository's protobuf exposes only GetHealth,
-# while the roadmap acceptance requires CRUD, relationship, filtering/pagination, and error
-# contract coverage. Do not report a false PASS.
 PROTO="proto/master-data/v1/master-data.proto"
 require_file "$PROTO"
 for rpc in CreateMasterData GetMasterData ListMasterData UpdateMasterData DeleteMasterData GetRelationship; do
