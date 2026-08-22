@@ -32,6 +32,7 @@ export type ReconstituteRegionProps = RegionProps & {
 
 export class Region {
   private constructor(private readonly props: ReconstituteRegionProps) {}
+
   static create(props: RegionProps): Region {
     const now = new Date();
     return new Region({
@@ -39,32 +40,40 @@ export class Region {
       uuid: props.uuid ?? randomUUID(),
       createdAt: props.createdAt ?? now,
       updatedAt: props.updatedAt ?? now,
-      altitudeUnit: props.altitudeUnit ?? 'MASL',
+      altitudeUnit: props.altitudeUnit === undefined ? 'MASL' : props.altitudeUnit,
       isActive: props.isActive ?? true,
       sortOrder: props.sortOrder ?? 0,
     }).validate();
   }
+
   static reconstitute(props: ReconstituteRegionProps): Region {
     return new Region(props).validate();
   }
+
   get uuid(): string {
     return this.props.uuid;
   }
+
   get countryId(): string {
     return this.props.countryId;
   }
+
   get code(): string {
     return this.props.code;
   }
+
   get name(): string {
     return this.props.name;
   }
+
   get isActive(): boolean {
     return this.props.isActive ?? true;
   }
+
   get sortOrder(): number {
     return this.props.sortOrder ?? 0;
   }
+
   toPrimitives(): ReconstituteRegionProps {
     return {
       ...this.props,
@@ -72,6 +81,7 @@ export class Region {
       updatedAt: new Date(this.props.updatedAt),
     };
   }
+
   private validate(): Region {
     if (!this.props.countryId.trim())
       throw new Error('Region countryId is required');

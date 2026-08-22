@@ -31,21 +31,21 @@ const ENTITIES: MasterDataEntityName[] = [
 
 async function resetDatabase(prisma: PrismaService): Promise<void> {
   await prisma.$transaction([
-    prisma.sensoryProfileFlavor.deleteMany(),
-    prisma.sensoryProfile.deleteMany(),
-    prisma.coffeeBean.deleteMany(),
-    prisma.farm.deleteMany(),
-    prisma.farmer.deleteMany(),
-    prisma.organization.deleteMany(),
-    prisma.region.deleteMany(),
-    prisma.country.deleteMany(),
-    prisma.variety.deleteMany(),
-    prisma.species.deleteMany(),
-    prisma.processingMethod.deleteMany(),
-    prisma.coffeeGrade.deleteMany(),
-    prisma.harvestSeason.deleteMany(),
-    prisma.flavorProfile.deleteMany(),
-    prisma.certification.deleteMany(),
+    prisma.$executeRaw`DELETE FROM sensory_profile_flavors`,
+    prisma.$executeRaw`DELETE FROM sensory_profiles`,
+    prisma.$executeRaw`DELETE FROM coffee_beans`,
+    prisma.$executeRaw`DELETE FROM farms`,
+    prisma.$executeRaw`DELETE FROM farmers`,
+    prisma.$executeRaw`DELETE FROM organizations`,
+    prisma.$executeRaw`DELETE FROM regions`,
+    prisma.$executeRaw`DELETE FROM countries`,
+    prisma.$executeRaw`DELETE FROM varieties`,
+    prisma.$executeRaw`DELETE FROM species`,
+    prisma.$executeRaw`DELETE FROM processing_methods`,
+    prisma.$executeRaw`DELETE FROM coffee_grades`,
+    prisma.$executeRaw`DELETE FROM harvest_seasons`,
+    prisma.$executeRaw`DELETE FROM flavor_profiles`,
+    prisma.$executeRaw`DELETE FROM certifications`,
   ]);
 }
 
