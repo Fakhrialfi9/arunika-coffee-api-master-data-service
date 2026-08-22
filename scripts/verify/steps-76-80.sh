@@ -6,7 +6,24 @@ cd "$ROOT_DIR"
 
 log() { printf '\n[steps-76-80] %s\n' "$1"; }
 
-: "${DATABASE_URL:?DATABASE_URL must be set to the isolated MySQL test database}"
+# The verification script must be runnable from a normal local checkout without
+# requiring the caller to manually export DATABASE_URL first. Prefer an explicit
+# environment variable, then load DATABASE_URL from the local .env.test/.env file.
+# Never fall back to the development/production database: the validation below
+# requires the isolated *_test database before any Prisma command is executed.
+if [[ -z "${DATABASE_URL:-}" ]]; then
+  for env_file in .env.test .env; do
+    if [[ -f "$env_file" ]]; then
+      env_database_url="$(awk -F= '/^[[:space:]]*DATABASE_URL[[:space:]]*=/{value=$0; sub(/^[^=]*=/, "", value); gsub(/^\"|\"$/, "", value); gsub(/^\x27|\x27$/, "", value); print value}' "$env_file" | tail -n 1)"
+      if [[ -n "$env_database_url" ]]; then
+        export DATABASE_URL="$env_database_url"
+        break
+      fi
+    fi
+  done
+fi
+
+: "${DATABASE_URL:?DATABASE_URL must be set to the isolated MySQL test database (export it or define DATABASE_URL in .env.test/.env)}"
 case "$DATABASE_URL" in
   *arunika_coffee_master_data_test*) ;;
   *)
