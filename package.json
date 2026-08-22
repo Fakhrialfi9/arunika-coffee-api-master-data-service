@@ -59,7 +59,6 @@
     "@opentelemetry/auto-instrumentations-node": "0.79.0",
     "@opentelemetry/resources": "2.10.0",
     "@opentelemetry/sdk-metrics": "2.10.0",
-    "@opentelemetry/resources": "2.10.0",
     "@opentelemetry/sdk-node": "0.221.0",
     "@opentelemetry/semantic-conventions": "1.43.0",
     "@prisma/adapter-mariadb": "7.9.1",
@@ -86,7 +85,6 @@
     "globals": "17.0.0",
     "prettier": "3.9.6",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.67.0",
     "vitest": "4.1.10"
   }
 }
