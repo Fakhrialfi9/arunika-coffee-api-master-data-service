@@ -276,7 +276,9 @@ export class MasterDataGrpcController {
       throw new MasterDataValidationError(`${field} must contain valid JSON`);
     }
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new MasterDataValidationError(`${field} must contain a JSON object`);
+      throw new MasterDataValidationError(
+        `${field} must contain a JSON object`,
+      );
     }
     return parsed as MasterDataWrite;
   }
