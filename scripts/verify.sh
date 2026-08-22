@@ -21,7 +21,7 @@ fi
 echo
 echo "============================================================"
 echo " MASTER DATA SERVICE VERIFICATION"
-echo " Steps 26-75"
+echo " Steps 26-80"
 echo "============================================================"
 
 for script in "${scripts[@]}"; do
@@ -40,5 +40,5 @@ done
 echo
 echo "============================================================"
 echo " ALL VERIFICATION STEPS PASSED"
-echo " Steps 26-75"
+echo " Steps 26-80"
 echo "============================================================"
