@@ -1,16 +1,16 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
 
+import { MasterDataCrudUseCase } from '../../application/master-data/use-cases/master-data-crud.use-case.js';
+import { MasterDataRelationshipService } from '../../application/master-data/services/master-data-relationship.service.js';
+import { MasterDataValidationError } from '../../application/master-data/errors/master-data.errors.js';
+import { MASTER_DATA_CRUD_ENTITIES } from '../../application/master-data/master-data-crud.resources.js';
 import type {
   MasterDataEntityName,
   MasterDataListResult,
   MasterDataRecord,
   MasterDataWrite,
 } from '../../domain/shared/repositories/master-data.repository.js';
-import { MASTER_DATA_CRUD_ENTITIES } from '../../application/master-data/master-data-crud.resources.js';
-import { MasterDataCrudUseCase } from '../../application/master-data/use-cases/master-data-crud.use-case.js';
-import { MasterDataRelationshipService } from '../../application/master-data/services/master-data-relationship.service.js';
-import { MasterDataValidationError } from '../../application/master-data/errors/master-data.errors.js';
 
 interface HealthResponse {
   service: string;
@@ -72,7 +72,12 @@ interface MasterDataListResponse {
   totalPages: number;
 }
 
-const ENTITY_NAMES = new Set<string>(MASTER_DATA_CRUD_ENTITIES);
+const ENTITY_NAMES = new Set<string>([
+  ...MASTER_DATA_CRUD_ENTITIES,
+  'sensoryProfile',
+  'sensoryProfileFlavor',
+]);
+
 const RELATIONSHIPS = new Set([
   'countryRegions',
   'regionFarmers',
@@ -247,7 +252,9 @@ export class MasterDataGrpcController {
 
   private entity(value: string): MasterDataEntityName {
     if (!ENTITY_NAMES.has(value)) {
-      throw new MasterDataValidationError(`Unsupported master-data entity: ${value}`);
+      throw new MasterDataValidationError(
+        `Unsupported master-data entity: ${value}`,
+      );
     }
     return value as MasterDataEntityName;
   }

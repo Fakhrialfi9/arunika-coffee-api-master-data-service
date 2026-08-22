@@ -19,6 +19,8 @@ export const MASTER_DATA_CRUD_ENTITIES = [
   'harvestSeason',
   'certification',
   'flavorProfile',
+  'sensoryProfile',
+  'sensoryProfileFlavor',
   'coffeeBean',
 ] as const satisfies readonly MasterDataEntityName[];
 
@@ -40,6 +42,8 @@ export const MASTER_DATA_CRUD_RESOURCE_SLUGS = [
   'harvest',
   'certification',
   'flavor',
+  'sensory-profile',
+  'sensory-profile-flavor',
   'coffee-bean',
 ] as const;
 
