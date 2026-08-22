@@ -15,8 +15,7 @@ import { GrpcHealthService } from './presentation/grpc/health/grpc-health.servic
 async function bootstrap(): Promise<void> {
   const config = appConfig();
   const logger = new Logger('Bootstrap');
-
-  let healthService: GrpcHealthService | undefined;
+  const healthServiceRef: { current?: GrpcHealthService } = {};
 
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.GRPC,
@@ -33,7 +32,7 @@ async function bootstrap(): Promise<void> {
         _packageDefinition: unknown,
         server: Server,
       ): void => {
-        healthService?.attach(server);
+        healthServiceRef.current?.attach(server);
       },
       loader: {
         keepCase: true,
@@ -45,11 +44,11 @@ async function bootstrap(): Promise<void> {
     },
   });
 
-  healthService = app.get<GrpcHealthService>(GrpcHealthService);
+  healthServiceRef.current = app.get<GrpcHealthService>(GrpcHealthService);
 
   app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
   await app.listen();
-  await healthService.startMonitoring();
+  await healthServiceRef.current.startMonitoring();
 
   logger.log(
     JSON.stringify({
