@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { MasterDataGrpcController } from '../../src/infrastructure/grpc/master-data.grpc.controller.js';
+import { MasterDataGrpcController } from '../../src/presentation/grpc/master-data.grpc.controller.js';
 
 describe('Step 26 gRPC foundation', () => {
   it('exposes the MasterDataService health handler', () => {
