@@ -3,7 +3,7 @@ import type { OnApplicationShutdown } from '@nestjs/common';
 import type { Server } from '@grpc/grpc-js';
 import { HealthImplementation } from 'grpc-health-check';
 
-import { DatabaseHealthService } from '../database/database-health.service.js';
+import { DatabaseHealthService } from '../../../infrastructure/database/database-health.service.js';
 
 const SERVICE_NAME = 'arunika.coffee.master_data.v1.MasterDataService';
 const LIVENESS = 'liveness';
