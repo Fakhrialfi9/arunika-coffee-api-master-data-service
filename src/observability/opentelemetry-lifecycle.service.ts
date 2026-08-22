@@ -5,7 +5,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 
-import { appConfig, type AppConfig } from '../../config/app.config.js';
+import type { AppConfig } from '../../config/app.config.js';
 
 @Injectable()
 export class OpenTelemetryLifecycleService
@@ -15,7 +15,7 @@ export class OpenTelemetryLifecycleService
   private started = false;
 
   constructor(private readonly configService: ConfigService) {
-    const config = this.configService.getOrThrow<AppConfig>(appConfig.KEY);
+    const config = this.configService.getOrThrow<AppConfig>('app');
 
     this.sdk = new NodeSDK({
       autoDetectResources: false,
@@ -28,7 +28,7 @@ export class OpenTelemetryLifecycleService
   }
 
   onModuleInit(): void {
-    const config = this.configService.getOrThrow<AppConfig>(appConfig.KEY);
+    const config = this.configService.getOrThrow<AppConfig>('app');
 
     if (config.otelTracingEnabled || config.otelMetricsEnabled) {
       this.sdk.start();
