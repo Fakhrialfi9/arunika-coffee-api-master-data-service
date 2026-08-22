@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type { OnApplicationShutdown, OnModuleInit } from '@nestjs/common';
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 
-import { appConfig } from '../../config/app.config.js';
+import { appConfig, type AppConfig } from '../../config/app.config.js';
 
 @Injectable()
 export class OpenTelemetryLifecycleService
@@ -13,12 +14,13 @@ export class OpenTelemetryLifecycleService
   private readonly sdk: NodeSDK;
   private started = false;
 
-  constructor() {
-    const config = appConfig();
+  constructor(private readonly configService: ConfigService) {
+    const config = this.configService.getOrThrow<AppConfig>(appConfig.KEY);
+
     this.sdk = new NodeSDK({
       autoDetectResources: false,
       resource: resourceFromAttributes({
-        'service.name': config.name,
+        'service.name': config.otelServiceName,
         'deployment.environment.name': config.environment,
       }),
       instrumentations: [getNodeAutoInstrumentations()],
@@ -26,7 +28,8 @@ export class OpenTelemetryLifecycleService
   }
 
   onModuleInit(): void {
-    const config = appConfig();
+    const config = this.configService.getOrThrow<AppConfig>(appConfig.KEY);
+
     if (config.otelTracingEnabled || config.otelMetricsEnabled) {
       this.sdk.start();
       this.started = true;
@@ -35,6 +38,7 @@ export class OpenTelemetryLifecycleService
 
   async onApplicationShutdown(): Promise<void> {
     if (!this.started) return;
+
     await this.sdk.shutdown();
     this.started = false;
   }
