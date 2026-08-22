@@ -49,7 +49,7 @@ describe('Step 80 security hardening', () => {
   it('rejects malicious application list input before it reaches persistence', async () => {
     const { MasterDataCrudService } =
       await import('../../src/application/master-data/services/master-data-crud.service.js');
-    const repository = { list: async () => ({}) };
+    const repository = { list: () => Promise.resolve({}) };
     const factory = { get: () => repository } as never;
     const service = new MasterDataCrudService(factory);
 
