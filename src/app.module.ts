@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 
 import { MasterDataApplicationModule } from './application/master-data/master-data-application.module.js';
+import { AppController } from './app.controller.js';
+import { AppService } from './app.service.js';
 import { appConfig } from './config/app.config.js';
 import { validateEnvironment } from './config/env.validation.js';
 import { DatabaseModule } from './infrastructure/database/database.module.js';
@@ -20,8 +22,8 @@ import { MasterDataGrpcController } from './presentation/grpc/master-data.grpc.c
     DatabaseModule,
     MasterDataApplicationModule,
   ],
-  controllers: [MasterDataGrpcController],
-  providers: [GrpcHealthService],
+  controllers: [AppController, MasterDataGrpcController],
+  providers: [AppService, GrpcHealthService],
   exports: [GrpcHealthService],
 })
 export class AppModule {}
