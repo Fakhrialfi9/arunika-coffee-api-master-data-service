@@ -62,14 +62,25 @@ describe('Step 80 security hardening', () => {
   });
 
   it('does not expose database credentials through validation errors', () => {
-    expect(() =>
+    let validationError: unknown;
+
+    try {
       validateEnvironment({
         ...validEnvironment,
         DATABASE_URL: 'not-a-mysql-url-with-secret-password',
-      }),
-    ).toThrow((error: Error) => {
-      expect(error.message).not.toContain('ci:ci');
-      return true;
-    });
+      });
+    } catch (error) {
+      validationError = error;
+    }
+
+    expect(validationError).toBeInstanceOf(Error);
+
+    if (!(validationError instanceof Error)) {
+      throw new Error('Expected environment validation to fail');
+    }
+
+    expect(validationError.message).toContain('DATABASE_URL');
+    expect(validationError.message).not.toContain('ci:ci');
+    expect(validationError.message).not.toContain('secret-password');
   });
 });
