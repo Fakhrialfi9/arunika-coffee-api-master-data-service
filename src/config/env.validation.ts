@@ -127,7 +127,7 @@ class EnvironmentVariables {
   @Min(1)
   SECURITY_RATE_LIMIT_MAX = 100;
 
-  @Matches(/^\d+(?:kb|mb)$/i)
+  @Matches(/^(?:[1-9]\d{0,2}kb|1mb)$/i)
   SECURITY_BODY_LIMIT = '1mb';
 
   @Type(() => Number)
