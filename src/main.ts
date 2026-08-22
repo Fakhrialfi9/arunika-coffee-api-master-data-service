@@ -10,11 +10,13 @@ import { protoPath as healthCheckProtoPath } from 'grpc-health-check';
 
 import { AppModule } from './app.module.js';
 import { appConfig } from './config/app.config.js';
-import { GrpcHealthService } from './infrastructure/health/grpc-health.service.js';
+import { GrpcHealthService } from './presentation/grpc/health/grpc-health.service.js';
 
 async function bootstrap(): Promise<void> {
   const config = appConfig();
   const logger = new Logger('Bootstrap');
+
+  let healthService: GrpcHealthService | undefined;
 
   const app = await NestFactory.createMicroservice(AppModule, {
     transport: Transport.GRPC,
@@ -29,9 +31,9 @@ async function bootstrap(): Promise<void> {
       maxSendMessageLength: config.securityGrpcMaxMessageBytes,
       onLoadPackageDefinition: (
         _packageDefinition: unknown,
-        server: unknown,
+        server: Server,
       ): void => {
-        healthService.attach(server as Server);
+        healthService?.attach(server);
       },
       loader: {
         keepCase: true,
@@ -43,7 +45,7 @@ async function bootstrap(): Promise<void> {
     },
   });
 
-  const healthService = app.get(GrpcHealthService);
+  healthService = app.get<GrpcHealthService>(GrpcHealthService);
 
   app.enableShutdownHooks(['SIGINT', 'SIGTERM']);
   await app.listen();
