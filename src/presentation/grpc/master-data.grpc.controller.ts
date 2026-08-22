@@ -72,6 +72,9 @@ interface MasterDataListResponse {
   total_pages: number;
 }
 
+type MasterDataFilterValue = string | number | boolean | undefined;
+type MasterDataFilters = Record<string, MasterDataFilterValue>;
+
 const ENTITY_NAMES = new Set<string>([
   ...MASTER_DATA_CRUD_ENTITIES,
   'sensoryProfile',
@@ -133,7 +136,7 @@ export class MasterDataGrpcController {
   ): Promise<MasterDataListResponse> {
     const entity = this.entity(request.entity);
     const filters = request.filters_json
-      ? this.parseJsonObject(request.filters_json, 'filters_json')
+      ? this.parseFilters(request.filters_json)
       : undefined;
     const result = await this.crud.list(entity, {
       ...(request.page ? { page: request.page } : {}),
@@ -281,6 +284,27 @@ export class MasterDataGrpcController {
       );
     }
     return parsed as MasterDataWrite;
+  }
+
+  private parseFilters(value: string): MasterDataFilters {
+    const parsed = this.parseJsonObject(value, 'filters_json');
+    const filters: MasterDataFilters = {};
+
+    for (const [key, filterValue] of Object.entries(parsed)) {
+      if (
+        typeof filterValue !== 'string' &&
+        typeof filterValue !== 'number' &&
+        typeof filterValue !== 'boolean' &&
+        filterValue !== undefined
+      ) {
+        throw new MasterDataValidationError(
+          `filters_json.${key} must be a string, number, boolean, or undefined`,
+        );
+      }
+      filters[key] = filterValue;
+    }
+
+    return filters;
   }
 
   private recordResponse(record: MasterDataRecord): MasterDataResponse {
