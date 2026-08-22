@@ -19,7 +19,7 @@ interface HealthResponse {
 
 interface CreateMasterDataRequest {
   entity: string;
-  dataJson: string;
+  data_json: string;
 }
 
 interface GetMasterDataRequest {
@@ -34,17 +34,17 @@ interface ListMasterDataRequest {
   limit?: number;
   offset?: number;
   search?: string;
-  isActive?: boolean;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-  filtersJson?: string;
+  is_active?: boolean;
+  sort_by?: string;
+  sort_order?: 'asc' | 'desc';
+  filters_json?: string;
 }
 
 interface UpdateMasterDataRequest {
   entity: string;
   id?: string;
   uuid?: string;
-  dataJson: string;
+  data_json: string;
 }
 
 interface DeleteMasterDataRequest {
@@ -61,15 +61,15 @@ interface RelationshipRequest {
 }
 
 interface MasterDataResponse {
-  dataJson: string;
+  data_json: string;
 }
 
 interface MasterDataListResponse {
-  itemsJson: string;
+  items_json: string;
   page: number;
   limit: number;
   total: number;
-  totalPages: number;
+  total_pages: number;
 }
 
 const ENTITY_NAMES = new Set<string>([
@@ -107,7 +107,7 @@ export class MasterDataGrpcController {
     request: CreateMasterDataRequest,
   ): Promise<MasterDataResponse> {
     const entity = this.entity(request.entity);
-    const data = this.parseJsonObject(request.dataJson, 'data_json');
+    const data = this.parseJsonObject(request.data_json, 'data_json');
     return this.recordResponse(await this.crud.create(entity, data));
   }
 
@@ -132,17 +132,19 @@ export class MasterDataGrpcController {
     request: ListMasterDataRequest,
   ): Promise<MasterDataListResponse> {
     const entity = this.entity(request.entity);
-    const filters = request.filtersJson
-      ? this.parseJsonObject(request.filtersJson, 'filters_json')
+    const filters = request.filters_json
+      ? this.parseJsonObject(request.filters_json, 'filters_json')
       : undefined;
     const result = await this.crud.list(entity, {
       ...(request.page ? { page: request.page } : {}),
       ...(request.limit ? { limit: request.limit } : {}),
       ...(request.offset ? { offset: request.offset } : {}),
       ...(request.search ? { search: request.search } : {}),
-      ...(request.isActive ? { isActive: request.isActive } : {}),
-      ...(request.sortBy ? { sortBy: request.sortBy } : {}),
-      ...(request.sortOrder ? { sortOrder: request.sortOrder } : {}),
+      ...(request.is_active !== undefined
+        ? { isActive: request.is_active }
+        : {}),
+      ...(request.sort_by ? { sortBy: request.sort_by } : {}),
+      ...(request.sort_order ? { sortOrder: request.sort_order } : {}),
       ...(filters ? { filters } : {}),
     });
     return this.listResponse(result);
@@ -156,7 +158,7 @@ export class MasterDataGrpcController {
     if (!request.id && !request.uuid) {
       throw new MasterDataValidationError('id or uuid is required');
     }
-    const data = this.parseJsonObject(request.dataJson, 'data_json');
+    const data = this.parseJsonObject(request.data_json, 'data_json');
     return this.recordResponse(
       await this.crud.update(
         entity,
@@ -247,6 +249,10 @@ export class MasterDataGrpcController {
           total: 1,
           totalPages: 1,
         });
+      default:
+        throw new MasterDataValidationError(
+          `Unsupported relationship: ${request.relationship}`,
+        );
     }
   }
 
@@ -276,16 +282,16 @@ export class MasterDataGrpcController {
   }
 
   private recordResponse(record: MasterDataRecord): MasterDataResponse {
-    return { dataJson: JSON.stringify(record) };
+    return { data_json: JSON.stringify(record) };
   }
 
   private listResponse(result: MasterDataListResult): MasterDataListResponse {
     return {
-      itemsJson: JSON.stringify(result.items),
+      items_json: JSON.stringify(result.items),
       page: result.page,
       limit: result.limit,
       total: result.total,
-      totalPages: result.totalPages,
+      total_pages: result.totalPages,
     };
   }
 }

@@ -22,7 +22,7 @@ describe('Step 26 gRPC foundation', () => {
     const controller = new MasterDataGrpcController(crud, relationships);
 
     await expect(
-      controller.createMasterData({ entity: 'unknown', dataJson: '{}' }),
+      controller.createMasterData({ entity: 'unknown', data_json: '{}' }),
     ).rejects.toThrow('Unsupported master-data entity: unknown');
   });
 });
