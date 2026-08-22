@@ -5,7 +5,7 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { resourceFromAttributes } from '@opentelemetry/resources';
 
-import type { AppConfig } from '../../config/app.config.js';
+import type { AppConfig } from '../config/app.config.js';
 
 @Injectable()
 export class OpenTelemetryLifecycleService
