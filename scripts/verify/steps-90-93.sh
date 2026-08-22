@@ -19,7 +19,13 @@ require_file() {
 fail_if_match() {
   local pattern="$1"
   shift
-  if grep -REn --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage --exclude=package-lock.json "$pattern" "$@"; then
+  if grep -REn \
+    --exclude-dir=node_modules \
+    --exclude-dir=dist \
+    --exclude-dir=coverage \
+    --exclude=package-lock.json \
+    --exclude=steps-90-93.sh \
+    "$pattern" "$@"; then
     echo "BLOCKER: forbidden pattern matched: $pattern" >&2
     exit 1
   fi
@@ -114,7 +120,8 @@ fail_if_match '@nestjs/|@grpc/' src/domain
 fail_if_match 'DATABASE_URL|DATABASE_HOST|DATABASE_USER|DATABASE_PASSWORD' src/domain src/application src/presentation
 
 # Master Data Service must remain the only owner of its database. References to
-# the Users database are prohibited in this repository.
+# the Users database are prohibited in this repository. The verifier itself
+# contains these forbidden tokens as audit patterns, so it is excluded above.
 fail_if_match 'arunika_coffee_users|DATABASE_USERS|USERS_DATABASE' .
 
 # Verify the documented transport and persistence boundaries remain present.
