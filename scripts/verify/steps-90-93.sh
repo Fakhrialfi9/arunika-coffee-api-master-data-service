@@ -19,7 +19,7 @@ require_file() {
 fail_if_match() {
   local pattern="$1"
   shift
-  if grep -REn --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage "$pattern" "$@"; then
+  if grep -REn --exclude-dir=node_modules --exclude-dir=dist --exclude-dir=coverage --exclude=package-lock.json "$pattern" "$@"; then
     echo "BLOCKER: forbidden pattern matched: $pattern" >&2
     exit 1
   fi
@@ -33,6 +33,11 @@ printf 'PHASE 2 — Master Data Service — Steps 90-93 verification\n'
 printf 'Repository: %s\n' "$ROOT_DIR"
 printf 'Branch: '
 git branch --show-current
+
+if [[ "$(git branch --show-current)" != "main" ]]; then
+  echo 'BLOCKER: verification must run on branch main.' >&2
+  exit 1
+fi
 
 # STEP 90 — Regression baseline
 require_file scripts/verify/steps-81-90.sh
@@ -81,8 +86,7 @@ if find src test -type f -name '*.ts' -empty -print -quit | grep -q .; then
   exit 1
 fi
 
-# TODO/FIXME are allowed only when they are not blockers; final gate treats any
-# remaining marker in implementation/test code as requiring explicit cleanup.
+# TODO/FIXME markers in implementation/test code require explicit cleanup at the final gate.
 fail_if_match '(TODO|FIXME)' src test
 
 # Dependency audit is intentionally strict at the final quality gate.
@@ -108,7 +112,7 @@ fail_if_match 'DATABASE_URL|DATABASE_HOST|DATABASE_USER|DATABASE_PASSWORD' src/d
 
 # Master Data Service must remain the only owner of its database. References to
 # the Users database are prohibited in this repository.
-fail_if_match 'arunika_coffee_users|DATABASE_USERS|USERS_DATABASE' . ':!package-lock.json'
+fail_if_match 'arunika_coffee_users|DATABASE_USERS|USERS_DATABASE' .
 
 # Verify the documented transport and persistence boundaries remain present.
 grep -q 'Master Data Service owns all master-data persistence' docs/architecture.md
@@ -120,15 +124,10 @@ grep -q 'Repository interfaces are domain/application-facing contracts' docs/arc
 grep -q 'MASTER_DATA_REPOSITORY_FACTORY' src/domain/shared/repositories/master-data.repository.ts
 grep -q 'Prisma' src/infrastructure/database/repositories/prisma-master-data-repository.factory.ts
 grep -q 'MasterDataCrudUseCase' src/presentation/grpc/master-data.grpc.controller.ts
-
 grep -q 'GetRelationship' proto/master-data/v1/master-data.proto
-
 grep -q 'CreateMasterData' proto/master-data/v1/master-data.proto
-
 grep -q 'ListMasterData' proto/master-data/v1/master-data.proto
-
 grep -q 'UpdateMasterData' proto/master-data/v1/master-data.proto
-
 grep -q 'DeleteMasterData' proto/master-data/v1/master-data.proto
 
 run npx prisma validate
@@ -165,18 +164,18 @@ else
   exit 1
 fi
 
-# Contract and ownership assertions.
+# Database contract assertions: every expected physical table must be mapped in Prisma schema.
 for table in \
   certifications coffee_beans coffee_grades countries farmers farms \
   flavor_profiles harvest_seasons organizations processing_methods regions \
   sensory_profile_flavors sensory_profiles species varieties; do
-  if ! grep -Rqi "model.*${table}\|${table}" prisma/schema; then
-    echo "BLOCKER: expected database model/table reference not found: ${table}" >&2
+  if ! grep -Rqi "@@map(\"${table}\")" prisma/schema; then
+    echo "BLOCKER: expected database table mapping not found in Prisma schema: ${table}" >&2
     exit 1
   fi
 done
 
-fail_if_match 'arunika_coffee_users|DATABASE_USERS|USERS_DATABASE' . ':!package-lock.json'
+fail_if_match 'arunika_coffee_users|DATABASE_USERS|USERS_DATABASE' .
 fail_if_match '@prisma/client|PrismaClient|@prisma/' src/domain src/application src/presentation
 
 require_file README.md
