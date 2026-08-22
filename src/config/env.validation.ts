@@ -166,8 +166,30 @@ class EnvironmentVariables {
   OTEL_METRIC_EXPORT_INTERVAL = 60000;
 }
 
+function parseDatabaseUrl(databaseUrl: string): URL {
+  let parsedUrl: URL;
+
+  try {
+    parsedUrl = new URL(databaseUrl);
+  } catch {
+    throw new Error('DATABASE_URL must be a valid MySQL connection URL');
+  }
+
+  if (
+    parsedUrl.protocol !== 'mysql:' ||
+    !parsedUrl.hostname ||
+    !parsedUrl.username ||
+    !parsedUrl.pathname ||
+    parsedUrl.pathname === '/'
+  ) {
+    throw new Error('DATABASE_URL must be a valid MySQL connection URL');
+  }
+
+  return parsedUrl;
+}
+
 function validateProductionEnvironment(config: EnvironmentVariables): void {
-  const databaseUrl = new URL(config.DATABASE_URL);
+  const databaseUrl = parseDatabaseUrl(config.DATABASE_URL);
   const databasePassword = config.DATABASE_PASSWORD.trim().toLowerCase();
   const databaseUser = config.DATABASE_USER.trim().toLowerCase();
   const corsOrigins = config.SECURITY_CORS_ORIGINS.split(',')
@@ -235,6 +257,8 @@ export function validateEnvironment(
         .join('\n')}`,
     );
   }
+
+  parseDatabaseUrl(validatedConfig.DATABASE_URL);
 
   if (validatedConfig.NODE_ENV === NodeEnvironment.Production) {
     validateProductionEnvironment(validatedConfig);
