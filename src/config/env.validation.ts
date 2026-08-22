@@ -9,6 +9,7 @@ import {
   IsNumberString,
   IsString,
   IsUrl,
+  Matches,
   Max,
   Min,
   validateSync,
@@ -126,14 +127,13 @@ class EnvironmentVariables {
   @Min(1)
   SECURITY_RATE_LIMIT_MAX = 100;
 
-  @IsString()
-  @IsNotEmpty()
+  @Matches(/^\d+(?:kb|mb)$/i)
   SECURITY_BODY_LIMIT = '1mb';
 
   @Type(() => Number)
   @IsInt()
   @Min(1024)
-  @Max(16 * 1024 * 1024)
+  @Max(1024 * 1024)
   SECURITY_GRPC_MAX_MESSAGE_BYTES = 1024 * 1024;
 
   @IsString()

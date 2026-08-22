@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: arunika_coffee_master_data_test
+          MYSQL_USER: ci
+          MYSQL_PASSWORD: ci
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      NODE_ENV: test
+      APP_NAME: arunika-coffee-api-master-data-service
+      APP_HOST: 127.0.0.1
+      APP_PORT: 3000
+      DATABASE_HOST: 127.0.0.1
+      DATABASE_PORT: 3306
+      DATABASE_NAME: arunika_coffee_master_data_test
+      DATABASE_USER: ci
+      DATABASE_PASSWORD: ci
+      DATABASE_URL: mysql://ci:ci@127.0.0.1:3306/arunika_coffee_master_data_test
+      DATABASE_POOL_CONNECTION_LIMIT: 5
+      DATABASE_CONNECT_TIMEOUT_MS: 5000
+      DATABASE_ACQUIRE_TIMEOUT_MS: 10000
+      DATABASE_POOL_IDLE_TIMEOUT_SEC: 60
+      GRPC_MASTER_HOST: 127.0.0.1
+      GRPC_MASTER_PORT: 50053
+      MASTER_GRPC_TIMEOUT_MS: 3000
+      SECURITY_CORS_ORIGINS: http://localhost:3000
+      SECURITY_RATE_LIMIT_TTL: 60000
+      SECURITY_RATE_LIMIT_MAX: 1000
+      SECURITY_BODY_LIMIT: 1mb
+      SECURITY_GRPC_MAX_MESSAGE_BYTES: 1048576
+      SECURITY_TRUST_PROXY: loopback
+      LOG_ENABLED: false
+      LOG_LEVEL: warn
+      OTEL_SERVICE_NAME: arunika-coffee-api-master-data-service-test
+      OTEL_TRACING_ENABLED: false
+      OTEL_TRACES_SAMPLER_ARG: 0
+      OTEL_METRICS_ENABLED: false
+      OTEL_METRIC_EXPORT_INTERVAL: 60000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+
+      - name: Deploy migrations to isolated test database
+        run: npm run prisma:deploy
+
+      - name: Seed isolated test database
+        run: npm run prisma:seed
+
+      - name: Format check
+        run: npm run format:check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Step 76 unit tests
+        run: npm run test:unit
+
+      - name: Step 77-78 MySQL integration tests
+        run: npm run test:integration
+
+      - name: Step 79 E2E tests
+        run: npm run test:e2e
+
+      - name: gRPC regression tests
+        run: npm run test:grpc
+
+      - name: Step 80 security tests
+        run: npm run test:security
+
+      - name: Build
+        run: npm run build

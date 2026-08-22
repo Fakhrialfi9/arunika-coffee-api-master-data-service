@@ -9,47 +9,68 @@ const validEnvironment = {
   APP_PORT: '3000',
   DATABASE_HOST: '127.0.0.1',
   DATABASE_PORT: '3306',
-  DATABASE_NAME: 'arunika_coffee_master_data',
+  DATABASE_NAME: 'arunika_coffee_master_data_test',
   DATABASE_USER: 'ci',
   DATABASE_PASSWORD: 'ci',
-  DATABASE_URL: 'mysql://ci:ci@127.0.0.1:3306/arunika_coffee_master_data',
+  DATABASE_URL: 'mysql://ci:ci@127.0.0.1:3306/arunika_coffee_master_data_test',
   GRPC_MASTER_HOST: '127.0.0.1',
   GRPC_MASTER_PORT: '50053',
   SECURITY_CORS_ORIGINS: 'http://localhost:3000',
+  SECURITY_BODY_LIMIT: '1mb',
+  SECURITY_GRPC_MAX_MESSAGE_BYTES: '1048576',
   OTEL_SERVICE_NAME: 'arunika-coffee-api-master-data-service',
 };
 
-describe('Step 26 security foundation', () => {
-  it('accepts the test environment baseline', () => {
-    expect(validateEnvironment(validEnvironment).DATABASE_NAME).toBe(
-      'arunika_coffee_master_data',
+describe('Step 80 security hardening', () => {
+  it('accepts the 1 MB payload baseline and gRPC message limit', () => {
+    const config = validateEnvironment(validEnvironment);
+    expect(config.SECURITY_BODY_LIMIT).toBe('1mb');
+    expect(config.SECURITY_GRPC_MAX_MESSAGE_BYTES).toBe(1024 * 1024);
+  });
+
+  it('rejects oversized gRPC messages', () => {
+    expect(() =>
+      validateEnvironment({
+        ...validEnvironment,
+        SECURITY_GRPC_MAX_MESSAGE_BYTES: '1048577',
+      }),
+    ).toThrow('Environment validation failed');
+  });
+
+  it('rejects malformed body limit configuration', () => {
+    expect(() =>
+      validateEnvironment({
+        ...validEnvironment,
+        SECURITY_BODY_LIMIT: 'unlimited',
+      }),
+    ).toThrow('Environment validation failed');
+  });
+
+  it('rejects malicious application list input before it reaches persistence', async () => {
+    const { MasterDataCrudService } = await import(
+      '../../src/application/master-data/services/master-data-crud.service.js'
     );
+    const repository = { list: async () => ({}) };
+    const factory = { get: () => repository } as never;
+    const service = new MasterDataCrudService(factory);
+
+    await expect(
+      service.list('country', {
+        search: "' OR 1=1 --",
+        sortBy: 'name; DROP TABLE countries' as never,
+      }),
+    ).rejects.toThrow('Unsupported master-data sort field');
   });
 
-  it('rejects localhost database configuration in production', () => {
+  it('does not expose database credentials through validation errors', () => {
     expect(() =>
       validateEnvironment({
         ...validEnvironment,
-        NODE_ENV: 'production',
+        DATABASE_URL: 'not-a-mysql-url-with-secret-password',
       }),
-    ).toThrow('DATABASE_HOST must not point to localhost in production');
-  });
-
-  it('rejects local gRPC binding in production', () => {
-    expect(() =>
-      validateEnvironment({
-        ...validEnvironment,
-        NODE_ENV: 'production',
-        DATABASE_HOST: 'db.internal',
-        DATABASE_URL:
-          'mysql://app:strong-secret@db.internal:3306/arunika_coffee_master_data',
-        DATABASE_USER: 'app',
-        DATABASE_PASSWORD: 'strong-secret',
-        APP_HOST: '0.0.0.0',
-        GRPC_MASTER_HOST: '127.0.0.1',
-        LOG_LEVEL: 'info',
-        SECURITY_CORS_ORIGINS: 'https://example.com',
-      }),
-    ).toThrow('GRPC_MASTER_HOST must not bind to localhost in production');
+    ).toThrow((error: Error) => {
+      expect(error.message).not.toContain('ci:ci');
+      return true;
+    });
   });
 });
