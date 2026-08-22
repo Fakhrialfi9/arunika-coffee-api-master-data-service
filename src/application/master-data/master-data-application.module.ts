@@ -4,6 +4,7 @@ import { MASTER_DATA_REPOSITORY_FACTORY } from '../../domain/shared/repositories
 import { SENSORY_PROFILE_FLAVOR_REPOSITORY } from '../../domain/sensory/repositories/sensory-profile-flavor.repository.js';
 import { PrismaMasterDataRepositoryFactory } from '../../infrastructure/database/repositories/prisma-master-data-repository.factory.js';
 import { PrismaSensoryProfileFlavorRepository } from '../../infrastructure/database/repositories/prisma-sensory-profile-flavor.repository.js';
+import { MasterDataCrudUseCase } from './use-cases/master-data-crud.use-case.js';
 import { MasterDataCrudService } from './services/master-data-crud.service.js';
 import { MasterDataRelationshipService } from './services/master-data-relationship.service.js';
 import { SensoryProfileMappingService } from './services/sensory-profile-mapping.service.js';
@@ -11,6 +12,7 @@ import { SensoryProfileMappingService } from './services/sensory-profile-mapping
 @Module({
   providers: [
     MasterDataCrudService,
+    MasterDataCrudUseCase,
     MasterDataRelationshipService,
     SensoryProfileMappingService,
     PrismaMasterDataRepositoryFactory,
@@ -26,6 +28,7 @@ import { SensoryProfileMappingService } from './services/sensory-profile-mapping
   ],
   exports: [
     MasterDataCrudService,
+    MasterDataCrudUseCase,
     MasterDataRelationshipService,
     SensoryProfileMappingService,
     MASTER_DATA_REPOSITORY_FACTORY,
