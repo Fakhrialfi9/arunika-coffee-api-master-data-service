@@ -46,8 +46,7 @@ describe('validateEnvironment', () => {
     expect(() =>
       validateEnvironment(
         valid({
-          DATABASE_URL:
-            'mysql://test:test@127.0.0.1:3306/another_database',
+          DATABASE_URL: 'mysql://test:test@127.0.0.1:3306/another_database',
         }),
       ),
     ).toThrow('DATABASE_URL database name must match DATABASE_NAME');
@@ -75,8 +74,8 @@ describe('validateEnvironment', () => {
   });
 
   it('rejects a sampler argument outside 0..1', () => {
-    expect(() => validateEnvironment(valid({ OTEL_TRACES_SAMPLER_ARG: '2' }))).toThrow(
-      'Environment validation failed',
-    );
+    expect(() =>
+      validateEnvironment(valid({ OTEL_TRACES_SAMPLER_ARG: '2' })),
+    ).toThrow('Environment validation failed');
   });
 });

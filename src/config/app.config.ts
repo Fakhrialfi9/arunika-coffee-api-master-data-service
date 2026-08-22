@@ -53,8 +53,7 @@ export const appConfig = registerAs('app', (): AppConfig => ({
   logEnabled: toBoolean(process.env.LOG_ENABLED, true),
   logLevel: process.env.LOG_LEVEL ?? 'info',
   otelServiceName:
-    process.env.OTEL_SERVICE_NAME ??
-    'arunika-coffee-api-master-data-service',
+    process.env.OTEL_SERVICE_NAME ?? 'arunika-coffee-api-master-data-service',
   otelTracingEnabled: toBoolean(process.env.OTEL_TRACING_ENABLED, true),
   otelTracesSamplerArg: Number(process.env.OTEL_TRACES_SAMPLER_ARG ?? 1),
   otelMetricsEnabled: toBoolean(process.env.OTEL_METRICS_ENABLED, true),

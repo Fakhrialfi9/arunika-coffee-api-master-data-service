@@ -21,10 +21,18 @@ const REQUEST_ID_PATTERN = /^[A-Za-z0-9._:-]{1,128}$/;
 @Injectable()
 export class GrpcObservabilityInterceptor implements NestInterceptor {
   private readonly logger = new Logger(GrpcObservabilityInterceptor.name);
-  private readonly tracer = trace.getTracer('arunika-coffee-api-master-data-service');
-  private readonly meter = metrics.getMeter('arunika-coffee-api-master-data-service');
-  private readonly requestCounter = this.meter.createCounter('grpc.server.requests');
-  private readonly requestDuration = this.meter.createHistogram('grpc.server.duration_ms');
+  private readonly tracer = trace.getTracer(
+    'arunika-coffee-api-master-data-service',
+  );
+  private readonly meter = metrics.getMeter(
+    'arunika-coffee-api-master-data-service',
+  );
+  private readonly requestCounter = this.meter.createCounter(
+    'grpc.server.requests',
+  );
+  private readonly requestDuration = this.meter.createHistogram(
+    'grpc.server.duration_ms',
+  );
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
     const call = context.switchToRpc().getContext<GrpcCallContext>();
